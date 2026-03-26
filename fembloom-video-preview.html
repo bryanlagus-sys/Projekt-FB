@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fembloom — Video Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0A0806;overflow:hidden;cursor:none;font-family:'DM Sans',sans-serif}
+
+#cd{position:fixed;width:8px;height:8px;background:#E8A0AC;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9999}
+#cr{position:fixed;width:28px;height:28px;border:1px solid rgba(232,160,172,.4);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9998;transition:width .25s,height .25s}
+
+/* ── LAYOUT ── */
+.outer{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  gap:3rem;padding:2rem;
+}
+
+/* ── PHONE FRAME ── */
+.phone-frame{
+  width:320px;height:568px;
+  background:#0D0608;
+  border-radius:40px;
+  border:1px solid rgba(255,255,255,.1);
+  position:relative;
+  overflow:hidden;
+  flex-shrink:0;
+  box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 40px rgba(192,86,106,.12);
+}
+.phone-notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:100px;height:22px;background:#0D0608;
+  border-radius:0 0 14px 14px;z-index:20;
+}
+.phone-screen{
+  position:absolute;inset:0;border-radius:40px;overflow:hidden;
+  background:#000;
+}
+
+/* ── VIDEO SCENES ── */
+.scene{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .6s ease;
+}
+.scene.active{opacity:1}
+
+/* Scene 1 — black with dot */
+#sc1{background:#000}
+.dot-light{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--rose,#C0566A);
+  box-shadow:0 0 20px rgba(192,86,106,.8),0 0 40px rgba(192,86,106,.4);
+  animation:pulse-dot 1.5s ease infinite;
+}
+@keyframes pulse-dot{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.6}}
+
+/* Scene 2 — one woman */
+#sc2{background:linear-gradient(180deg,#1A0810 0%,#000 100%)}
+.woman-single{display:flex;flex-direction:column;align-items:center;gap:1rem}
+.woman-silhouette{
+  width:60px;height:90px;
+  background:rgba(232,160,172,.15);
+  border-radius:30px 30px 20px 20px;
+  position:relative;
+}
+.woman-silhouette::before{
+  content:'';position:absolute;
+  width:26px;height:26px;
+  background:rgba(232,160,172,.2);
+  border-radius:50%;top:-14px;left:50%;transform:translateX(-50%);
+}
+.phone-glow{
+  width:28px;height:44px;
+  background:rgba(192,86,106,.3);
+  border-radius:4px;
+  border:1px solid rgba(192,86,106,.6);
+  position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 12px rgba(192,86,106,.4);
+}
+.sc-label{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;font-weight:300;color:#fff;
+  letter-spacing:.04em;
+  text-align:center;
+}
+.sc-sublabel{font-size:.7rem;color:rgba(255,255,255,.3);letter-spacing:.15em;text-transform:uppercase;margin-top:.3rem}
+
+/* Scene 3 — split 2 */
+#sc3{background:#000}
+.split-2{display:grid;grid-template-columns:1fr 1fr;width:100%;height:100%;gap:1px}
+.split-cell{
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#1A0810,#0A0408);
+  position:relative;overflow:hidden;
+}
+.split-cell::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 80%,rgba(192,86,106,.08),transparent 70%);
+}
+.woman-sm{
+  width:36px;height:54px;
+  background:rgba(232,160,172,.18);
+  border-radius:18px 18px 12px 12px;
+  position:relative;flex-shrink:0;
+}
+.woman-sm::before{
+  content:'';position:absolute;
+  width:16px;height:16px;border-radius:50%;
+  background:rgba(232,160,172,.22);
+  top:-9px;left:50%;transform:translateX(-50%);
+}
+.woman-sm .ph-sm{
+  width:14px;height:22px;
+  background:rgba(192,86,106,.35);
+  border-radius:2px;border:1px solid rgba(192,86,106,.5);
+  position:absolute;bottom:4px;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 6px rgba(192,86,106,.3);
+}
+
+/* Scene 4 — grid 4 */
+#sc4{background:#000}
+.grid-4{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;width:100%;height:100%;gap:1px}
+
+/* Scene 5 — many silhouettes */
+#sc5{background:#000;flex-direction:column;padding:1rem}
+.silhouette-field{
+  width:100%;flex:1;
+  display:flex;flex-wrap:wrap;
+  align-items:flex-start;justify-content:center;
+  gap:4px;padding:1rem;
+  overflow:hidden;
+}
+.sil-tiny{
+  width:14px;height:22px;
+  background:rgba(192,86,106,.25);
+  border-radius:7px 7px 5px 5px;
+  position:relative;
+  animation:silAppear .3s ease both;
+}
+.sil-tiny::before{
+  content:'';position:absolute;
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(192,86,106,.3);
+  top:-4px;left:50%;transform:translateX(-50%);
+}
+.sil-tiny.lit{background:rgba(232,160,172,.5)}
+.sil-tiny.lit::before{background:rgba(232,160,172,.6)}
+@keyframes silAppear{from{opacity:0;transform:scaleY(0)}to{opacity:1;transform:scaleY(1)}}
+.sc5-label{
+  font-family:'DM Sans',sans-serif;
+  font-size:.72rem;color:rgba(255,255,255,.5);
+  letter-spacing:.12em;text-transform:uppercase;
+  text-align:center;padding:.5rem 0;
+}
+
+/* Scene 6 — the number */
+#sc6{background:#000}
+.big-number-wrap{text-align:center}
+.big-number{
+  font-family:'Playfair Display',serif;
+  font-size:3.2rem;font-weight:300;
+  color:#fff;line-height:1;
+  letter-spacing:-.02em;
+  overflow:hidden;
+}
+.big-number span{
+  display:inline-block;
+  animation:numRise .5s ease both;
+}
+@keyframes numRise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+.big-sub{
+  font-size:.72rem;color:rgba(255,255,255,.4);
+  letter-spacing:.12em;text-transform:uppercase;
+  margin-top:.5rem;
+}
+.big-desc{
+  font-size:.85rem;color:rgba(255,255,255,.6);
+  margin-top:.8rem;line-height:1.5;
+}
+
+/* Scene 7 — logo end */
+#sc7{background:linear-gradient(180deg,#1A0810 0%,#000 100%)}
+.end-logo{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;font-weight:300;color:#fff;
+  letter-spacing:.02em;margin-bottom:.5rem;
+}
+.end-logo em{color:rgba(232,160,172,.9);font-style:italic}
+.end-slogan{
+  font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);
+}
+.end-line{
+  width:60px;height:1px;
+  background:linear-gradient(to right,transparent,rgba(192,86,106,.6),transparent);
+  margin:.8rem auto;
+}
+
+/* ── CONTROLS ── */
+.controls{
+  display:flex;flex-direction:column;gap:1.5rem;
+  width:280px;
+}
+.ctrl-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;font-weight:300;color:#fff;
+  line-height:1.2;
+}
+.ctrl-title em{color:rgba(232,160,172,.9);font-style:italic}
+.ctrl-sub{font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.6;margin-top:.4rem}
+
+.timeline{display:flex;flex-direction:column;gap:.5rem;margin-top:.5rem}
+.tl-item{
+  display:flex;align-items:center;gap:.8rem;
+  padding:.5rem .8rem;
+  border:1px solid transparent;
+  transition:all .3s;cursor:none;
+}
+.tl-item.active{background:rgba(192,86,106,.1);border-color:rgba(192,86,106,.3)}
+.tl-time{font-size:.65rem;color:rgba(255,255,255,.3);width:2.5rem;flex-shrink:0;letter-spacing:.06em}
+.tl-dot{width:6px;height:6px;border-radius:50%;background:rgba(192,86,106,.3);flex-shrink:0;transition:background .3s}
+.tl-item.active .tl-dot{background:rgba(192,86,106,1);box-shadow:0 0 6px rgba(192,86,106,.5)}
+.tl-text{font-size:.78rem;color:rgba(255,255,255,.5);line-height:1.3}
+.tl-item.active .tl-text{color:rgba(255,255,255,.85)}
+
+.ctrl-btns{display:flex;gap:.8rem;margin-top:.5rem}
+.btn-play{
+  flex:1;padding:.7rem;
+  background:rgba(192,86,106,.9);color:#fff;
+  border:none;font-family:'DM Sans',sans-serif;
+  font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:none;transition:background .25s;
+}
+.btn-play:hover{background:#C0566A}
+.btn-reset{
+  padding:.7rem 1rem;
+  background:transparent;color:rgba(255,255,255,.4);
+  border:1px solid rgba(255,255,255,.12);
+  font-family:'DM Sans',sans-serif;font-size:.75rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  cursor:none;transition:all .25s;
+}
+.btn-reset:hover{border-color:rgba(255,255,255,.3);color:rgba(255,255,255,.7)}
+
+.progress-bar{
+  width:100%;height:2px;background:rgba(255,255,255,.08);
+  position:relative;margin-top:.5rem;
+}
+.progress-fill{
+  height:100%;background:var(--rose,#C0566A);width:0%;
+  transition:width .3s linear;
+}
+
+/* ── SPLIT CELL WOMAN ── */
+.split-woman{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem}
+
+/* number counter */
+.counter-badge{
+  position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;color:rgba(255,255,255,.6);
+  white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="cd"></div>
+<div id="cr"></div>
+
+<div class="outer">
+
+  <!-- PHONE -->
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-screen">
+
+      <!-- S1: dot -->
+      <div class="scene active" id="sc1">
+        <div class="dot-light"></div>
+      </div>
+
+      <!-- S2: 1 woman with phone light -->
+      <div class="scene" id="sc2" style="background:linear-gradient(180deg,#1A0810 0%,#000 100%)">
+        <canvas id="womanCanvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></canvas>
+        <div class="woman-single" style="position:relative;z-index:2">
+          <div class="woman-silhouette">
+            <div class="phone-glow"></div>
+          </div>
+          <div>
+            <div class="sc-label">1.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- S3: 2 women -->
+      <div class="scene" id="sc3">
+        <div class="split-2">
+          <div class="split-cell">
+            <div class="split-woman">
+              <div class="woman-sm"><div class="ph-sm"></div></div>
+            </div>
+          </div>
+          <div class="split-cell">
+            <div class="split-woman">
+              <div class="woman-sm"><div class="ph-sm"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="counter-badge">2.</div>
+      </div>
+
+      <!-- S4: 4 women -->
+      <div class="scene" id="sc4">
+        <div class="grid-4">
+          <div class="split-cell"><div class="split-woman"><div class="woman-sm"><div class="ph-sm"></div></div></div></div>
+          <div class="split-cell"><div class="split-woman"><div class="woman-sm"><div class="ph-sm"></div></div></div></div>
+          <div class="split-cell"><div class="split-woman"><div class="woman-sm"><div class="ph-sm"></div></div></div></div>
+          <div class="split-cell"><div class="split-woman"><div class="woman-sm"><div class="ph-sm"></div></div></div></div>
+        </div>
+        <div class="counter-badge">4. 8. 16. 32. 64. 100.</div>
+      </div>
+
+      <!-- S5: many silhouettes -->
+      <div class="scene" id="sc5">
+        <div class="silhouette-field" id="silField"></div>
+        <div class="sc5-label">100. 1.000. 10.000. ...</div>
+      </div>
+
+      <!-- S6: the number -->
+      <div class="scene" id="sc6">
+        <div class="big-number-wrap">
+          <div class="big-number" id="bigNum">
+            <span style="animation-delay:.1s">4</span><span style="animation-delay:.25s">.</span><span style="animation-delay:.4s">0</span><span style="animation-delay:.55s">0</span><span style="animation-delay:.7s">0</span><span style="animation-delay:.85s">.</span><span style="animation-delay:1s">0</span><span style="animation-delay:1.15s">0</span><span style="animation-delay:1.3s">0</span>
+          </div>
+          <div class="big-sub">Frauen leben in Österreich.</div>
+          <div class="big-desc">Eine App.<br>Für dich. Für sie. Für alle.</div>
+        </div>
+      </div>
+
+      <!-- S7: end -->
+      <div class="scene" id="sc7">
+        <div class="end-logo">Fem<em>bloom</em></div>
+        <div class="end-line"></div>
+        <div class="end-slogan">Every woman deserves to know.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <div>
+      <div class="ctrl-title">Video<br><em>Preview</em></div>
+      <div class="ctrl-sub">30 Sekunden · Kein Ton nötig · 9:16 Format<br>Für Instagram Reel & TikTok</div>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item active" id="tl0" onclick="jumpTo(0)">
+        <div class="tl-time">0:00</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">Schwarzer Screen — ein Lichtpunkt</div>
+      </div>
+      <div class="tl-item" id="tl1" onclick="jumpTo(1)">
+        <div class="tl-time">0:03</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">1 Frau mit Fembloom App</div>
+      </div>
+      <div class="tl-item" id="tl2" onclick="jumpTo(2)">
+        <div class="tl-time">0:06</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">Split — 2 Frauen</div>
+      </div>
+      <div class="tl-item" id="tl3" onclick="jumpTo(3)">
+        <div class="tl-time">0:09</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">4 · 8 · 16 · 32 — exponentiell</div>
+      </div>
+      <div class="tl-item" id="tl4" onclick="jumpTo(4)">
+        <div class="tl-time">0:15</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">Hunderte Silhouetten füllen den Screen</div>
+      </div>
+      <div class="tl-item" id="tl5" onclick="jumpTo(5)">
+        <div class="tl-time">0:22</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">4.000.000 — die Zahl baut sich auf</div>
+      </div>
+      <div class="tl-item" id="tl6" onclick="jumpTo(6)">
+        <div class="tl-time">0:28</div>
+        <div class="tl-dot"></div>
+        <div class="tl-text">Logo · Slogan · Ende</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    </div>
+
+    <div class="ctrl-btns">
+      <button class="btn-play" id="playBtn" onclick="togglePlay()">▶ Abspielen</button>
+      <button class="btn-reset" onclick="resetAnim()">↺ Reset</button>
+    </div>
+
+    <div style="font-size:.72rem;color:rgba(255,255,255,.25);line-height:1.6;border-top:1px solid rgba(255,255,255,.06);padding-top:1rem">
+      Klicke auf einen Timeline-Punkt um direkt zu springen. Das ist ein Konzept-Preview — das finale Video wird von einer Agentur produziert.
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══ PHONE LIGHT GLOW ══
+(function(){
+  function init(){
+    const cv=document.getElementById('womanCanvas');
+    if(!cv) return;
+    const ctx=cv.getContext('2d');
+    let W,H,animating=false,rafId=null;
+    function resize(){
+      W=cv.offsetWidth; H=cv.offsetHeight;
+      cv.width=W; cv.height=H;
+    }
+    resize();
+
+    function draw(t){
+      ctx.clearRect(0,0,W,H);
+      const pulse=.75+Math.sin(t*.002)*.25;
+      const cx=W/2, cy=H*.62; // phone position approx
+
+      // Main phone screen glow — blue-white upward cone
+      const g=ctx.createRadialGradient(cx,cy,0,cx,cy,H*.55);
+      g.addColorStop(0,   `rgba(200,185,255,${.55*pulse})`);
+      g.addColorStop(0.15,`rgba(180,160,240,${.28*pulse})`);
+      g.addColorStop(0.4, `rgba(140,110,210,${.1*pulse})`);
+      g.addColorStop(1,   'rgba(0,0,0,0)');
+      ctx.fillStyle=g;
+      ctx.fillRect(0,0,W,H);
+
+      // Subtle rose tint at edges
+      const rose=ctx.createRadialGradient(cx,cy,0,cx,cy,H*.35);
+      rose.addColorStop(0,   `rgba(192,86,106,${.15*pulse})`);
+      rose.addColorStop(0.5, `rgba(192,86,106,${.04*pulse})`);
+      rose.addColorStop(1,   'rgba(192,86,106,0)');
+      ctx.fillStyle=rose;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    let startT=null;
+    function loop(t){
+      if(!animating) return;
+      if(!startT) startT=t;
+      draw(t-startT);
+      rafId=requestAnimationFrame(loop);
+    }
+
+    const sc2=document.getElementById('sc2');
+    new MutationObserver(()=>{
+      if(sc2.classList.contains('active')){
+        animating=true; startT=null;
+        cancelAnimationFrame(rafId);
+        rafId=requestAnimationFrame(loop);
+      } else {
+        animating=false;
+        cancelAnimationFrame(rafId);
+      }
+    }).observe(sc2,{attributes:true,attributeFilter:['class']});
+  }
+  document.fonts.ready.then(init);
+})();
+
+// Cursor
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('button,.tl-item').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cr.style.width='44px';cr.style.height='44px';});
+  el.addEventListener('mouseleave',()=>{cr.style.width='28px';cr.style.height='28px';});
+});
+
+// Silhouette field
+const field = document.getElementById('silField');
+function buildSilhouettes(n){
+  field.innerHTML='';
+  for(let i=0;i<n;i++){
+    const d=document.createElement('div');
+    d.className='sil-tiny'+(Math.random()>.6?' lit':'');
+    d.style.animationDelay=(i*18)+'ms';
+    field.appendChild(d);
+  }
+}
+
+// Scene management
+const scenes=['sc1','sc2','sc3','sc4','sc5','sc6','sc7'];
+const tls=['tl0','tl1','tl2','tl3','tl4','tl5','tl6'];
+// Durations in ms per scene
+const DURATIONS=[3000,3500,3000,3500,7000,5500,3500];
+let current=0, playing=false, timer=null, elapsed=0, total=30000;
+
+function showScene(idx){
+  scenes.forEach((s,i)=>{
+    const el=document.getElementById(s);
+    el.classList.toggle('active',i===idx);
+  });
+  tls.forEach((t,i)=>{
+    document.getElementById(t).classList.toggle('active',i===idx);
+  });
+  if(idx===4) buildSilhouettes(80);
+  current=idx;
+}
+
+function nextScene(){
+  if(current>=scenes.length-1){
+    playing=false;
+    document.getElementById('playBtn').textContent='▶ Nochmal';
+    return;
+  }
+  showScene(current+1);
+  if(playing){
+    timer=setTimeout(nextScene, DURATIONS[current]);
+  }
+}
+
+function togglePlay(){
+  if(playing){
+    playing=false;
+    clearTimeout(timer);
+    document.getElementById('playBtn').textContent='▶ Fortsetzen';
+  } else {
+    if(current>=scenes.length-1) resetAnim();
+    playing=true;
+    document.getElementById('playBtn').textContent='⏸ Pause';
+    timer=setTimeout(nextScene, DURATIONS[current]);
+    animProgress();
+  }
+}
+
+function resetAnim(){
+  clearTimeout(timer);
+  playing=false;
+  elapsed=0;
+  showScene(0);
+  document.getElementById('playBtn').textContent='▶ Abspielen';
+  document.getElementById('progFill').style.width='0%';
+}
+
+function jumpTo(idx){
+  clearTimeout(timer);
+  showScene(idx);
+  if(playing){
+    timer=setTimeout(nextScene, DURATIONS[idx]);
+  }
+  const pct=(DURATIONS.slice(0,idx).reduce((a,b)=>a+b,0)/total)*100;
+  document.getElementById('progFill').style.width=pct+'%';
+}
+
+// Progress animation
+let startTime=null;
+function animProgress(ts){
+  if(!playing) return;
+  if(!startTime) startTime=ts;
+  const progEl=document.getElementById('progFill');
+  // Calculate based on scene
+  const sceneStart=DURATIONS.slice(0,current).reduce((a,b)=>a+b,0);
+  requestAnimationFrame(t=>{
+    if(!playing) return;
+    animProgress(t);
+  });
+}
+
+// Simpler progress: update every 100ms
+setInterval(()=>{
+  if(!playing) return;
+  const done=DURATIONS.slice(0,current).reduce((a,b)=>a+b,0);
+  const pct=(done/total)*100;
+  document.getElementById('progFill').style.width=Math.min(pct,100)+'%';
+},200);
+</script>
+</body>
+</html>
