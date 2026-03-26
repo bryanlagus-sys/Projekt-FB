@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fembloom</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════
+   BASE
+══════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;cursor:none}
+body{background:#060204;font-family:'DM Sans',sans-serif;font-weight:300}
+
+/* ── CURSOR ── */
+#cd{position:fixed;width:6px;height:6px;background:#E8A0AC;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9999;transition:width .2s,height .2s}
+#cr{position:fixed;width:30px;height:30px;border:1px solid rgba(232,160,172,.4);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9998;transition:width .3s,height .3s}
+
+/* ══════════════════════════════
+   INTRO LAYER
+══════════════════════════════ */
+#intro{position:fixed;inset:0;z-index:50;background:#060204}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+#c1{z-index:1}#c2{z-index:2}#c3{z-index:3}
+
+.intro-wrap{
+  position:absolute;inset:0;z-index:10;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;
+}
+.pre-line{font-size:clamp(.7rem,1.2vw,.85rem);letter-spacing:.35em;text-transform:uppercase;color:rgba(232,160,172,0);margin-bottom:3.5rem;animation:fadeWord 1s .4s ease forwards}
+@keyframes fadeWord{to{color:rgba(232,160,172,.5)}}
+.logo-wrap{position:relative;margin-bottom:2.5rem}
+.intro-logo{font-family:'Playfair Display',serif;font-size:clamp(4rem,10vw,9rem);font-weight:200;color:transparent;letter-spacing:-.02em;line-height:1;background:linear-gradient(135deg,#fff 0%,rgba(232,160,172,1) 40%,rgba(192,86,106,1) 70%,rgba(122,46,62,1) 100%);-webkit-background-clip:text;background-clip:text;opacity:0;animation:logoReveal 2s .8s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes logoReveal{0%{opacity:0;transform:translateY(40px) scale(.96);letter-spacing:.3em}60%{opacity:1}100%{opacity:1;transform:translateY(0) scale(1);letter-spacing:-.02em}}
+.logo-glow{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:60%;height:40px;background:radial-gradient(ellipse,rgba(192,86,106,.4) 0%,transparent 70%);filter:blur(12px);opacity:0;animation:glowIn 1.5s 1.5s ease forwards}
+@keyframes glowIn{to{opacity:1}}
+.divider{width:0;height:1px;background:linear-gradient(to right,transparent,rgba(232,160,172,.6),transparent);margin:0 auto 2.5rem;animation:lineGrow 1.2s 2s ease forwards}
+@keyframes lineGrow{to{width:min(400px,60vw)}}
+.slogan{font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.5vw,1.8rem);font-weight:200;font-style:italic;color:transparent;line-height:1.4;letter-spacing:.02em;opacity:0;animation:sloganIn 1.5s 2.5s cubic-bezier(.16,1,.3,1) forwards}
+.slogan em{font-style:normal;background:linear-gradient(to right,#E8A0AC,#C0566A);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes sloganIn{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:translateY(0);color:rgba(255,255,255,.6)}}
+.intro-stats{display:flex;gap:4rem;margin-top:4rem;opacity:0;animation:fadeUp .8s 3.5s ease forwards}
+.i-stat-n{font-family:'Playfair Display',serif;font-size:2rem;font-weight:200;color:rgba(232,160,172,.8);line-height:1}
+.i-stat-l{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);margin-top:.3rem}
+.intro-cta-wrap{margin-top:4rem;opacity:0;animation:fadeUp .8s 4s ease forwards}
+.intro-cta{display:inline-flex;align-items:center;gap:1rem;background:transparent;border:1px solid rgba(192,86,106,.5);color:rgba(255,255,255,.7);padding:1.1rem 3rem;font-family:'DM Sans',sans-serif;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;cursor:none;position:relative;overflow:hidden;transition:color .3s,border-color .3s}
+.intro-cta::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(192,86,106,.15),rgba(232,160,172,.1));opacity:0;transition:opacity .3s}
+.intro-cta:hover{color:#fff;border-color:rgba(232,160,172,.8)}
+.intro-cta:hover::before{opacity:1}
+.cta-arrow{width:1.4rem;height:1px;background:rgba(232,160,172,.6);position:relative;transition:width .3s}
+.cta-arrow::after{content:'';position:absolute;right:0;top:-3px;border:4px solid transparent;border-left:6px solid rgba(232,160,172,.6)}
+.intro-cta:hover .cta-arrow{width:2rem}
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.6rem;opacity:0;animation:fadeUp .8s 4.5s ease forwards;z-index:20}
+.sh-line{width:1px;height:50px;overflow:hidden;background:rgba(255,255,255,.08)}
+.sh-line::after{content:'';display:block;width:100%;height:40%;background:rgba(232,160,172,.5);animation:drip 2s ease infinite}
+@keyframes drip{0%{transform:translateY(-100%)}100%{transform:translateY(260%)}}
+.sh-label{font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(255,255,255,.2)}
+.corner{position:absolute;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.12);z-index:20}
+.corner.tl{top:2rem;left:2.5rem;opacity:0;animation:fadeUp 1s 5s ease forwards}
+.corner.tr{top:2rem;right:2.5rem;opacity:0;animation:fadeUp 1s 5.2s ease forwards}
+.corner.bl{bottom:2rem;left:2.5rem;opacity:0;animation:fadeUp 1s 5.4s ease forwards}
+.corner.br{bottom:2rem;right:2.5rem;opacity:0;animation:fadeUp 1s 5.6s ease forwards}
+
+/* Transition overlay */
+.t-overlay{position:fixed;inset:0;background:#060204;z-index:200;opacity:0;pointer-events:none;transition:opacity .8s ease}
+.t-overlay.go{opacity:1;pointer-events:all}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ══════════════════════════════
+   DEMO LAYER
+══════════════════════════════ */
+:root{
+  --rose:#C0566A;--rose-soft:#E8A0AC;--rose-pale:#F7EAED;--rose-dk:#7A2E3E;
+  --cream:#FBF8F5;--warm:#F0E9E0;--sand:#E8DDD0;--ink:#1A1210;--muted:#8A7570;
+  --sage:#5E8A78;--sage-lt:#C2D8CE;--gold:#C4965A;--orange:#D97040;--green:#4E8A6A;
+  --phone-w:375px;--phone-h:812px;
+}
+#demo{position:fixed;inset:0;z-index:10;display:none;align-items:center;justify-content:center;background:#0D0608}
+#demo.active{display:flex}
+#bgDemo{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+.stage{position:relative;z-index:2;display:flex;align-items:center;gap:4rem;padding:1.5rem}
+
+/* Side panel */
+.side-panel{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:2rem}
+.brand{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:300;color:#fff;letter-spacing:.02em;line-height:1}
+.brand em{color:var(--rose-soft);font-style:italic}
+.brand-sub{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.4rem}
+.screen-nav{display:flex;flex-direction:column;gap:.4rem}
+.snav-item{display:flex;align-items:center;gap:.9rem;padding:.75rem 1rem;cursor:none;border:1px solid transparent;transition:all .3s;position:relative}
+.snav-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--rose);transform:scaleY(0);transition:transform .3s}
+.snav-item:hover{background:rgba(255,255,255,.04);border-color:rgba(192,86,106,.2)}
+.snav-item.active{background:rgba(192,86,106,.1);border-color:rgba(192,86,106,.3)}
+.snav-item.active::before{transform:scaleY(1)}
+.snav-icon{width:2rem;height:2rem;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;transition:background .3s}
+.snav-item.active .snav-icon{background:var(--rose)}
+.snav-title{font-size:.78rem;color:rgba(255,255,255,.75);font-weight:400}
+.snav-desc{font-size:.65rem;color:rgba(255,255,255,.3);margin-top:.1rem}
+.side-desc{padding:1rem 1.1rem;border-left:2px solid rgba(192,86,106,.3);background:rgba(255,255,255,.03)}
+.side-desc p{font-size:.76rem;color:rgba(255,255,255,.4);line-height:1.7}
+.side-desc strong{color:var(--rose-soft);font-weight:400}
+
+/* Phone */
+.phone-wrap{position:relative;filter:drop-shadow(0 40px 80px rgba(0,0,0,.6)) drop-shadow(0 0 40px rgba(192,86,106,.15))}
+.phone{width:var(--phone-w);height:var(--phone-h);background:#0A0608;border-radius:54px;position:relative;border:1px solid rgba(255,255,255,.12);overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 0 0 1px rgba(0,0,0,.5),0 2px 0 1px rgba(255,255,255,.08)}
+.phone::before{content:'';position:absolute;left:-3px;top:120px;width:3px;height:40px;background:rgba(255,255,255,.1);border-radius:2px 0 0 2px;box-shadow:0 55px 0 rgba(255,255,255,.1),0 100px 0 rgba(255,255,255,.1)}
+.phone::after{content:'';position:absolute;right:-3px;top:150px;width:3px;height:65px;background:rgba(255,255,255,.1);border-radius:0 2px 2px 0}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:34px;background:#0A0608;border-radius:0 0 22px 22px;z-index:20;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.notch-cam{width:12px;height:12px;border-radius:50%;background:#1a1a1a;border:1px solid #2a2a2a}
+.notch-speaker{width:50px;height:6px;border-radius:3px;background:#1a1a1a}
+.screen{position:absolute;inset:0;border-radius:54px;overflow:hidden;background:var(--cream)}
+.status-bar{position:absolute;top:0;left:0;right:0;height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 1.5rem .4rem;z-index:15;font-size:.65rem;font-weight:500}
+.status-time{font-size:.78rem;font-weight:600;letter-spacing:-.02em}
+.home-indicator{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:130px;height:5px;background:rgba(0,0,0,.2);border-radius:3px;z-index:15}
+.app-screen{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .4s ease,transform .4s ease;transform:translateX(30px);border-radius:54px;overflow:hidden}
+.app-screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.app-screen.exit{opacity:0;transform:translateX(-30px)}
+
+/* HOME */
+#sc-home{background:var(--cream)}
+.home-header{padding:52px 1.5rem 1.2rem;background:linear-gradient(135deg,var(--rose-dk) 0%,#5A1828 100%);position:relative;overflow:hidden}
+.home-header::before{content:'';position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.06);top:-60px;right:-40px}
+.home-header::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.04);bottom:-30px;left:20px}
+.home-greeting{font-size:.68rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem}
+.home-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:300;color:#fff}
+.home-name em{color:var(--rose-soft);font-style:italic}
+.home-date{font-size:.68rem;color:rgba(255,255,255,.4);margin-top:.3rem}
+.home-streak{display:inline-flex;align-items:center;gap:.6rem;background:rgba(255,255,255,.1);padding:.45rem .85rem;border-radius:20px;margin-top:.9rem;font-size:.68rem;color:rgba(255,255,255,.8)}
+.home-body{padding:1.1rem;overflow-y:auto;height:calc(100% - 195px)}
+.home-next{background:#fff;border-radius:16px;padding:.9rem 1.1rem;margin-bottom:.9rem;border:1px solid var(--rose-pale);display:flex;align-items:center;gap:.9rem;box-shadow:0 4px 16px rgba(192,86,106,.08)}
+.home-next-icon{width:2.6rem;height:2.6rem;border-radius:12px;background:linear-gradient(135deg,var(--rose),var(--rose-dk));display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.home-next-label{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.home-next-title{font-size:.85rem;font-weight:500;color:var(--ink);margin:.1rem 0 .25rem}
+.home-next-btn{margin-left:auto;background:var(--rose);color:#fff;font-size:.62rem;padding:.3rem .75rem;border-radius:20px;white-space:nowrap;border:none;font-family:'DM Sans',sans-serif;cursor:none}
+.home-stats{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-bottom:.9rem}
+.hstat{background:#fff;border-radius:14px;padding:.8rem .9rem;border:1px solid rgba(0,0,0,.05)}
+.hstat-num{font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:300;color:var(--rose);line-height:1}
+.hstat-label{font-size:.6rem;color:var(--muted);margin-top:.2rem}
+.home-tip{background:linear-gradient(135deg,rgba(192,86,106,.08),rgba(232,160,172,.08));border-radius:14px;padding:.9rem 1rem;border:1px solid var(--rose-pale)}
+.home-tip-tag{font-size:.58rem;text-transform:uppercase;letter-spacing:.12em;color:var(--rose);margin-bottom:.35rem}
+.home-tip p{font-size:.74rem;color:var(--muted);line-height:1.6}
+
+/* STEPS */
+#sc-steps{background:var(--cream)}
+.steps-header{padding:52px 1.5rem 1rem;background:var(--ink)}
+.steps-back{font-size:.68rem;color:rgba(255,255,255,.4);margin-bottom:.7rem;display:flex;align-items:center;gap:.3rem;cursor:none}
+.steps-title{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:300;color:#fff}
+.steps-progress{margin-top:.9rem;background:rgba(255,255,255,.1);border-radius:4px;height:4px}
+.steps-progress-fill{height:100%;border-radius:4px;background:linear-gradient(to right,var(--rose-soft),var(--rose));transition:width .6s ease}
+.steps-counter{font-size:.65rem;color:rgba(255,255,255,.4);margin-top:.3rem}
+.steps-body{padding:1rem;height:calc(100% - 175px);display:flex;flex-direction:column;gap:.8rem;overflow-y:auto}
+.step-card{background:#fff;border-radius:14px;padding:1rem 1.1rem;border-left:3px solid var(--rose);box-shadow:0 4px 16px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:.9rem;opacity:0;transform:translateX(20px);animation:stepIn .4s ease forwards}
+@keyframes stepIn{to{opacity:1;transform:none}}
+.step-num-badge{width:1.8rem;height:1.8rem;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--rose-dk));display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:500;color:#fff;flex-shrink:0}
+.step-content h4{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.25rem}
+.step-content p{font-size:.72rem;color:var(--muted);line-height:1.55}
+.step-done{width:1.1rem;height:1.1rem;border-radius:50%;border:1.5px solid var(--sage-lt);margin-left:auto;flex-shrink:0;transition:all .3s;cursor:none}
+.step-done.checked{background:var(--sage);border-color:var(--sage)}
+
+/* MAP */
+#sc-map{background:var(--ink)}
+.map-header{padding:52px 1.5rem .9rem;background:linear-gradient(to bottom,#2A0A12,var(--ink))}
+.map-header-top{display:flex;align-items:center;justify-content:space-between}
+.map-header h2{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:300;color:#fff}
+.map-month{font-size:.65rem;color:rgba(255,255,255,.35);margin-top:.2rem}
+.map-mode-btn{font-size:.62rem;padding:.28rem .75rem;border-radius:20px;background:rgba(192,86,106,.2);color:var(--rose-soft);border:1px solid rgba(192,86,106,.3);cursor:none;font-family:'DM Sans',sans-serif}
+.map-area{flex:1;display:flex;flex-direction:column;align-items:center;padding:.7rem .9rem 0;overflow:hidden}
+.map-svg-wrap{width:175px;position:relative;background:rgba(255,255,255,.03);border:1px solid rgba(192,86,106,.15);border-radius:4px;padding:.9rem}
+.map-svg-wrap svg{width:100%;cursor:crosshair}
+.map-legend{display:flex;gap:.7rem;margin-top:.65rem;flex-wrap:wrap;justify-content:center}
+.ml{display:flex;align-items:center;gap:.3rem;font-size:.58rem;color:rgba(255,255,255,.4)}
+.ml-dot{width:.5rem;height:.5rem;border-radius:50%;flex-shrink:0}
+.map-findings-list{width:100%;margin-top:.65rem;display:flex;flex-direction:column;gap:.35rem;padding:0 .3rem;max-height:110px;overflow-y:auto}
+.mf-item{background:rgba(255,255,255,.05);border-radius:8px;padding:.4rem .7rem;display:flex;align-items:center;gap:.6rem}
+.mf-dot{width:.55rem;height:.55rem;border-radius:50%;flex-shrink:0}
+.mf-text{font-size:.68rem;color:rgba(255,255,255,.6);flex:1}
+.mf-date{font-size:.58rem;color:rgba(255,255,255,.25)}
+#mapInstruction{font-size:.62rem;color:rgba(255,255,255,.22);text-align:center;margin-top:.4rem;letter-spacing:.08em}
+
+/* DIARY */
+#sc-diary{background:var(--cream)}
+.diary-header{padding:52px 1.5rem .9rem;background:var(--warm);border-bottom:1px solid var(--sand)}
+.diary-header h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:300;color:var(--ink)}
+.diary-header p{font-size:.68rem;color:var(--muted);margin-top:.2rem}
+.diary-body{padding:.9rem 1.1rem;overflow-y:auto;height:calc(100% - 150px)}
+.diary-month{font-size:.62rem;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin:.9rem 0 .5rem}
+.diary-entry{background:#fff;border-radius:12px;padding:.9rem 1rem;margin-bottom:.6rem;border:1px solid rgba(0,0,0,.05);box-shadow:0 2px 8px rgba(0,0,0,.04);position:relative;overflow:hidden}
+.diary-entry::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.diary-entry.ok::before{background:var(--sage)}
+.diary-entry.warn::before{background:var(--orange)}
+.diary-entry.new::before{background:var(--rose)}
+.de-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.de-date{font-size:.66rem;color:var(--muted)}
+.de-badge{font-size:.56rem;padding:.18rem .55rem;border-radius:20px;text-transform:uppercase;letter-spacing:.08em}
+.de-badge.ok{background:rgba(78,138,106,.1);color:var(--green)}
+.de-badge.warn{background:rgba(217,112,64,.1);color:var(--orange)}
+.de-badge.new{background:rgba(192,86,106,.1);color:var(--rose)}
+.de-title{font-size:.82rem;font-weight:500;color:var(--ink);margin-bottom:.3rem}
+.de-findings{display:flex;gap:.35rem;flex-wrap:wrap}
+.de-tag{font-size:.58rem;padding:.12rem .45rem;border-radius:10px;background:var(--rose-pale);color:var(--rose-dk)}
+.diary-add{position:absolute;bottom:75px;right:18px;width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--rose-dk));color:#fff;font-size:1.3rem;border:none;display:flex;align-items:center;justify-content:center;cursor:none;box-shadow:0 4px 16px rgba(192,86,106,.4)}
+
+/* CHAT */
+#sc-chat{background:var(--cream)}
+.chat-header{padding:52px 1.5rem .9rem;background:#fff;border-bottom:1px solid var(--rose-pale);display:flex;align-items:center;gap:.8rem}
+.chat-avatar{width:2.6rem;height:2.6rem;border-radius:50%;background:linear-gradient(135deg,var(--rose-soft),var(--rose));display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.chat-name{font-size:.86rem;font-weight:500;color:var(--ink)}
+.chat-status{font-size:.62rem;color:var(--sage);display:flex;align-items:center;gap:.3rem}
+.chat-status::before{content:'';width:.45rem;height:.45rem;border-radius:50%;background:var(--sage);display:block}
+.chat-body{padding:.7rem .9rem;height:calc(100% - 220px);overflow-y:auto;display:flex;flex-direction:column;gap:.65rem}
+.msg{display:flex;flex-direction:column;gap:.18rem;max-width:85%}
+.msg.ai{align-self:flex-start}
+.msg.user{align-self:flex-end;align-items:flex-end}
+.msg-bubble{padding:.6rem .85rem;border-radius:14px;font-size:.75rem;line-height:1.6}
+.msg.ai .msg-bubble{background:#fff;color:var(--ink);border:1px solid var(--rose-pale);border-bottom-left-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.msg.user .msg-bubble{background:linear-gradient(135deg,var(--rose),var(--rose-dk));color:#fff;border-bottom-right-radius:4px}
+.msg-time{font-size:.56rem;color:var(--muted)}
+.chat-input-wrap{position:absolute;bottom:28px;left:.9rem;right:.9rem;background:#fff;border-radius:25px;border:1px solid var(--rose-pale);display:flex;align-items:center;gap:.4rem;padding:.55rem .55rem .55rem .9rem;box-shadow:0 4px 20px rgba(192,86,106,.1)}
+.chat-input{flex:1;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--ink);background:transparent}
+.chat-input::placeholder{color:var(--muted)}
+.chat-send{width:1.9rem;height:1.9rem;border-radius:50%;background:var(--rose);color:#fff;border:none;display:flex;align-items:center;justify-content:center;font-size:.75rem;cursor:none;flex-shrink:0}
+.typing{display:flex;gap:.3rem;align-items:center;padding:.4rem}
+.typing span{width:.45rem;height:.45rem;border-radius:50%;background:var(--rose-soft);animation:bounce .8s ease infinite}
+.typing span:nth-child(2){animation-delay:.15s}
+.typing span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+/* BOTTOM NAV */
+.bottom-nav{position:absolute;bottom:28px;left:0;right:0;display:flex;justify-content:space-around;align-items:center;padding:.45rem .8rem .25rem;background:rgba(251,248,245,.95);backdrop-filter:blur(10px);border-top:1px solid rgba(0,0,0,.06);z-index:10}
+#sc-map .bottom-nav{background:rgba(15,6,8,.95);border-top-color:rgba(255,255,255,.06)}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:.18rem;cursor:none;padding:.25rem .7rem;transition:opacity .2s}
+.bnav-item:hover{opacity:.7}
+.bnav-icon{font-size:1.1rem}
+.bnav-label{font-size:.52rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.bnav-item.active .bnav-label{color:var(--rose)}
+#sc-map .bnav-label{color:rgba(255,255,255,.3)}
+#sc-map .bnav-item.active .bnav-label{color:var(--rose-soft)}
+
+/* RIGHT PANEL */
+.right-panel{width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:1.5rem}
+.rp-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:1.2rem}
+.rp-label{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:.7rem;display:flex;align-items:center;gap:.5rem}
+.rp-label::before{content:'';width:1rem;height:1px;background:rgba(255,255,255,.2)}
+.rp-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:300;color:#fff;line-height:1.3;margin-bottom:.6rem}
+.rp-title em{color:var(--rose-soft);font-style:italic}
+.rp-text{font-size:.72rem;color:rgba(255,255,255,.4);line-height:1.7}
+.rp-pills{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.7rem}
+.rp-pill{font-size:.6rem;padding:.22rem .65rem;border:1px solid rgba(192,86,106,.3);color:var(--rose-soft);letter-spacing:.06em}
+.progress-ring{display:flex;flex-direction:column;gap:.55rem;margin-top:.4rem}
+.pr-row{display:flex;align-items:center;gap:.6rem}
+.pr-label{font-size:.65rem;color:rgba(255,255,255,.4);width:4.5rem;flex-shrink:0}
+.pr-bar{flex:1;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.pr-fill{height:100%;border-radius:2px;background:linear-gradient(to right,var(--rose-soft),var(--rose));transition:width 1s ease}
+.pr-pct{font-size:.6rem;color:rgba(255,255,255,.3);width:2rem;text-align:right}
+</style>
+</head>
+<body>
+
+<div id="cd"></div>
+<div id="cr"></div>
+<div class="t-overlay" id="tOverlay"></div>
+
+<!-- ══ INTRO ══ -->
+<div id="intro">
+  <canvas id="c1"></canvas>
+  <canvas id="c2"></canvas>
+  <canvas id="c3"></canvas>
+  <div class="intro-wrap">
+    <div class="pre-line">Breast Health · Reimagined · Digital</div>
+    <div class="logo-wrap">
+      <div class="intro-logo">Fembloom</div>
+      <div class="logo-glow"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="slogan">Every woman deserves<br>to <em>know.</em></div>
+    <div class="intro-stats">
+      <div><div class="i-stat-n">1 : 8</div><div class="i-stat-l">Betroffen</div></div>
+      <div><div class="i-stat-n">0</div><div class="i-stat-l">Vergleichbare Apps</div></div>
+      <div><div class="i-stat-n">∞</div><div class="i-stat-l">Skalierbar</div></div>
+    </div>
+    <div class="intro-cta-wrap">
+      <button class="intro-cta" id="showDemo">
+        App Demo erleben
+        <div class="cta-arrow"></div>
+      </button>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="sh-line"></div><div class="sh-label">Entdecken</div></div>
+  <div class="corner tl">Wien · 2025</div>
+  <div class="corner tr">Fembloom v1.0</div>
+  <div class="corner bl">Zertifizierte Brustgesundheit</div>
+  <div class="corner br">Digital · Skalierbar · Einzigartig</div>
+</div>
+
+<!-- ══ DEMO ══ -->
+<div id="demo">
+  <canvas id="bgDemo"></canvas>
+  <div class="stage">
+
+    <!-- LEFT -->
+    <div class="side-panel">
+      <div>
+        <div class="brand">Fem<em>bloom</em></div>
+        <div class="brand-sub">Interactive App Demo</div>
+      </div>
+      <div class="screen-nav">
+        <div class="snav-item active" onclick="showScreen('home',0)">
+          <div class="snav-icon">🏠</div>
+          <div><div class="snav-title">Home & Dashboard</div><div class="snav-desc">Übersicht & nächster Termin</div></div>
+        </div>
+        <div class="snav-item" onclick="showScreen('steps',1)">
+          <div class="snav-icon">🎯</div>
+          <div><div class="snav-title">7-Schritte Untersuchung</div><div class="snav-desc">Geführte Selbstuntersuchung</div></div>
+        </div>
+        <div class="snav-item" onclick="showScreen('map',2)">
+          <div class="snav-icon">🗺️</div>
+          <div><div class="snav-title">Interaktives Brust-Mapping</div><div class="snav-desc">Befunde markieren & vergleichen</div></div>
+        </div>
+        <div class="snav-item" onclick="showScreen('diary',3)">
+          <div class="snav-icon">📓</div>
+          <div><div class="snav-title">Befund-Tagebuch</div><div class="snav-desc">Verlauf & Dokumentation</div></div>
+        </div>
+        <div class="snav-item" onclick="showScreen('chat',4)">
+          <div class="snav-icon">💬</div>
+          <div><div class="snav-title">KI-Chat Assistentin</div><div class="snav-desc">Fragen jederzeit stellen</div></div>
+        </div>
+      </div>
+      <div class="side-desc" id="sideDesc"><p>Das <strong>Dashboard</strong> zeigt den nächsten Untersuchungstermin, die Streak-Übersicht und einen persönlichen Tipp — alles auf einen Blick.</p></div>
+    </div>
+
+    <!-- PHONE -->
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="notch"><div class="notch-cam"></div><div class="notch-speaker"></div></div>
+        <div class="screen">
+
+          <!-- HOME -->
+          <div class="app-screen active" id="sc-home">
+            <div class="status-bar" style="color:#fff;z-index:50"><div class="status-time">9:41</div><div>●●● 🔋</div></div>
+            <div class="home-header">
+              <div class="home-greeting">Guten Morgen</div>
+              <div class="home-name">Willkommen, <em>Sarah</em></div>
+              <div class="home-date">Montag, 26. März 2025</div>
+              <div class="home-streak">🔥 &nbsp;4 Monate in Folge</div>
+            </div>
+            <div class="home-body">
+              <div class="home-next">
+                <div class="home-next-icon">🎯</div>
+                <div><div class="home-next-label">Nächste Untersuchung</div><div class="home-next-title">Selbstuntersuchung</div><div style="font-size:.6rem;color:var(--rose)">In 3 Tagen fällig</div></div>
+                <button class="home-next-btn" onclick="showScreen('steps',1)">Starten →</button>
+              </div>
+              <div class="home-stats">
+                <div class="hstat"><div class="hstat-num">4</div><div class="hstat-label">Untersuchungen</div></div>
+                <div class="hstat"><div class="hstat-num">2</div><div class="hstat-label">Aktive Befunde</div></div>
+                <div class="hstat"><div class="hstat-num">7</div><div class="hstat-label">Videos gesehen</div></div>
+                <div class="hstat"><div class="hstat-num">100%</div><div class="hstat-label">Vollständig</div></div>
+              </div>
+              <div class="home-tip"><div class="home-tip-tag">💡 Tipp des Tages</div><p>Die beste Zeit für die Untersuchung ist 3–5 Tage nach der Menstruation, wenn das Gewebe am weichsten ist.</p></div>
+            </div>
+            <div class="bottom-nav">
+              <div class="bnav-item active"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></div>
+              <div class="bnav-item" onclick="showScreen('steps',1)"><div class="bnav-icon">🎯</div><div class="bnav-label">Untersuchen</div></div>
+              <div class="bnav-item" onclick="showScreen('map',2)"><div class="bnav-icon">🗺️</div><div class="bnav-label">Mapping</div></div>
+              <div class="bnav-item" onclick="showScreen('diary',3)"><div class="bnav-icon">📓</div><div class="bnav-label">Tagebuch</div></div>
+              <div class="bnav-item" onclick="showScreen('chat',4)"><div class="bnav-icon">💬</div><div class="bnav-label">Chat</div></div>
+            </div>
+          </div>
+
+          <!-- STEPS -->
+          <div class="app-screen" id="sc-steps">
+            <div class="status-bar" style="color:#fff;z-index:50"><div class="status-time">9:41</div><div>●●● 🔋</div></div>
+            <div class="steps-header">
+              <div class="steps-back" onclick="showScreen('home',0)">← Zurück</div>
+              <div class="steps-title">Selbstuntersuchung</div>
+              <div class="steps-progress"><div class="steps-progress-fill" id="stepsBar" style="width:28%"></div></div>
+              <div class="steps-counter" id="stepsCounter">Schritt 2 von 7</div>
+            </div>
+            <div class="steps-body">
+              <div class="step-card" style="animation-delay:.05s"><div class="step-num-badge">1</div><div class="step-content"><h4>Visuelle Inspektion</h4><p>Stehe aufrecht vor dem Spiegel. Beobachte Form, Größe und Symmetrie beider Brüste.</p></div><div class="step-done checked"></div></div>
+              <div class="step-card" style="animation-delay:.1s"><div class="step-num-badge">2</div><div class="step-content"><h4>Arme heben</h4><p>Hebe beide Arme über den Kopf. Achte auf Veränderungen der Hautoberfläche.</p></div><div class="step-done"></div></div>
+              <div class="step-card" style="animation-delay:.15s;opacity:.6"><div class="step-num-badge" style="background:rgba(0,0,0,.2)">3</div><div class="step-content"><h4>Brustwarzen prüfen</h4><p>Überprüfe Form und Farbe der Brustwarzen auf Veränderungen.</p></div><div class="step-done"></div></div>
+              <div class="step-card" style="animation-delay:.2s;opacity:.4"><div class="step-num-badge" style="background:rgba(0,0,0,.2)">4</div><div class="step-content"><h4>Liegend abtasten</h4><p>Taste mit den Fingerkuppen in kreisenden Bewegungen systematisch ab.</p></div><div class="step-done"></div></div>
+            </div>
+            <div class="bottom-nav">
+              <div class="bnav-item" onclick="showScreen('home',0)"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></div>
+              <div class="bnav-item active"><div class="bnav-icon">🎯</div><div class="bnav-label">Untersuchen</div></div>
+              <div class="bnav-item" onclick="showScreen('map',2)"><div class="bnav-icon">🗺️</div><div class="bnav-label">Mapping</div></div>
+              <div class="bnav-item" onclick="showScreen('diary',3)"><div class="bnav-icon">📓</div><div class="bnav-label">Tagebuch</div></div>
+              <div class="bnav-item" onclick="showScreen('chat',4)"><div class="bnav-icon">💬</div><div class="bnav-label">Chat</div></div>
+            </div>
+          </div>
+
+          <!-- MAP -->
+          <div class="app-screen" id="sc-map">
+            <div class="status-bar" style="color:rgba(255,255,255,.5);z-index:50"><div class="status-time" style="color:rgba(255,255,255,.7)">9:41</div><div>●●● 🔋</div></div>
+            <div class="map-header">
+              <div class="map-header-top">
+                <div><h2>Brust-Mapping</h2><div class="map-month" id="mapMonthLabel">März 2025 · Tippe zum Markieren</div></div>
+                <button class="map-mode-btn" id="mapModeBtn" onclick="toggleMapMode()">Vergleich</button>
+              </div>
+            </div>
+
+            <!-- SINGLE VIEW -->
+            <div id="mapSingleView" class="map-area">
+              <div class="map-svg-wrap">
+                <svg id="mapSvg" viewBox="0 0 180 230" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M 38 52 Q 22 78 20 122 Q 18 158 26 184 Q 34 206 54 212 Q 72 218 90 218 Q 108 218 126 212 Q 146 206 154 184 Q 162 158 160 122 Q 158 78 142 52 Q 128 32 114 24 Q 103 18 90 18 Q 77 18 66 24 Q 52 32 38 52 Z" fill="rgba(192,86,106,.08)" stroke="rgba(192,86,106,.3)" stroke-width="1"/>
+                  <ellipse cx="90" cy="18" rx="19" ry="11" fill="rgba(192,86,106,.1)" stroke="rgba(192,86,106,.2)" stroke-width=".6"/>
+                  <ellipse cx="64" cy="112" rx="28" ry="30" fill="rgba(192,86,106,.09)" stroke="rgba(192,86,106,.2)" stroke-width=".8"/>
+                  <ellipse cx="116" cy="112" rx="28" ry="30" fill="rgba(192,86,106,.09)" stroke="rgba(192,86,106,.2)" stroke-width=".8"/>
+                  <circle cx="64" cy="114" r="2.5" fill="rgba(192,86,106,.3)" stroke="rgba(192,86,106,.4)" stroke-width=".7"/>
+                  <circle cx="116" cy="114" r="2.5" fill="rgba(192,86,106,.3)" stroke="rgba(192,86,106,.4)" stroke-width=".7"/>
+                  <ellipse cx="30" cy="86" rx="11" ry="14" fill="none" stroke="rgba(192,86,106,.15)" stroke-width=".6" stroke-dasharray="2.5,2"/>
+                  <ellipse cx="150" cy="86" rx="11" ry="14" fill="none" stroke="rgba(192,86,106,.15)" stroke-width=".6" stroke-dasharray="2.5,2"/>
+                  <line x1="90" y1="50" x2="90" y2="195" stroke="rgba(192,86,106,.08)" stroke-width=".5" stroke-dasharray="3,3"/>
+                  <line x1="22" y1="112" x2="158" y2="112" stroke="rgba(192,86,106,.08)" stroke-width=".5" stroke-dasharray="3,3"/>
+                  <circle cx="57" cy="100" r="5.5" fill="rgba(217,112,64,.75)" stroke="rgba(217,112,64,.9)" stroke-width="1"/>
+                  <circle cx="122" cy="124" r="5.5" fill="rgba(232,160,172,.75)" stroke="rgba(232,160,172,.9)" stroke-width="1"/>
+                  <circle cx="74" cy="132" r="5.5" fill="rgba(78,138,106,.75)" stroke="rgba(78,138,106,.9)" stroke-width="1"/>
+                  <g id="mapUserDots"></g>
+                </svg>
+              </div>
+              <div class="map-legend">
+                <div class="ml"><div class="ml-dot" style="background:#D97040"></div>Neu</div>
+                <div class="ml"><div class="ml-dot" style="background:var(--rose-soft)"></div>Laufend</div>
+                <div class="ml"><div class="ml-dot" style="background:#4E8A6A"></div>Abgeklungen</div>
+              </div>
+              <div class="map-findings-list">
+                <div class="mf-item"><div class="mf-dot" style="background:#D97040"></div><div class="mf-text">Oben-außen links · klein</div><div class="mf-date">Neu</div></div>
+                <div class="mf-item"><div class="mf-dot" style="background:var(--rose-soft)"></div><div class="mf-text">Unten-außen rechts</div><div class="mf-date">Seit Feb</div></div>
+                <div class="mf-item"><div class="mf-dot" style="background:#4E8A6A"></div><div class="mf-text">Innen links</div><div class="mf-date">Verheilt ✓</div></div>
+              </div>
+              <div id="mapInstruction">↑ Tippe auf die Silhouette</div>
+            </div>
+
+            <!-- COMPARE VIEW -->
+            <div id="mapCompareView" style="display:none;flex-direction:column;align-items:center;padding:.5rem .7rem 0;flex:1;overflow:hidden">
+              <!-- Month tabs -->
+              <div style="display:flex;gap:.4rem;margin-bottom:.6rem;width:100%">
+                <div style="flex:1;text-align:center;padding:.3rem;background:rgba(192,86,106,.2);border:1px solid rgba(192,86,106,.4);font-size:.6rem;color:var(--rose-soft);letter-spacing:.08em">FEB 2025</div>
+                <div style="width:1.5rem;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.2);font-size:.7rem">→</div>
+                <div style="flex:1;text-align:center;padding:.3rem;background:rgba(192,86,106,.35);border:1px solid rgba(192,86,106,.7);font-size:.6rem;color:#fff;letter-spacing:.08em">MÄR 2025</div>
+              </div>
+              <!-- Side by side maps -->
+              <div style="display:flex;gap:.6rem;width:100%;justify-content:center">
+                <!-- February -->
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                  <div style="font-size:.58rem;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">Februar</div>
+                  <div style="background:rgba(255,255,255,.03);border:1px solid rgba(192,86,106,.12);padding:.5rem;border-radius:2px;width:100%">
+                    <svg viewBox="0 0 180 230" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+                      <path d="M 38 52 Q 22 78 20 122 Q 18 158 26 184 Q 34 206 54 212 Q 72 218 90 218 Q 108 218 126 212 Q 146 206 154 184 Q 162 158 160 122 Q 158 78 142 52 Q 128 32 114 24 Q 103 18 90 18 Q 77 18 66 24 Q 52 32 38 52 Z" fill="rgba(192,86,106,.07)" stroke="rgba(192,86,106,.2)" stroke-width="1"/>
+                      <ellipse cx="90" cy="18" rx="19" ry="11" fill="rgba(192,86,106,.08)" stroke="rgba(192,86,106,.15)" stroke-width=".6"/>
+                      <ellipse cx="64" cy="112" rx="28" ry="30" fill="rgba(192,86,106,.07)" stroke="rgba(192,86,106,.15)" stroke-width=".7"/>
+                      <ellipse cx="116" cy="112" rx="28" ry="30" fill="rgba(192,86,106,.07)" stroke="rgba(192,86,106,.15)" stroke-width=".7"/>
+                      <circle cx="64" cy="114" r="2" fill="rgba(192,86,106,.25)" stroke="rgba(192,86,106,.35)" stroke-width=".6"/>
+                      <circle cx="116" cy="114" r="2" fill="rgba(192,86,106,.25)" stroke="rgba(192,86,106,.35)" stroke-width=".6"/>
+                      <line x1="90" y1="50" x2="90" y2="195" stroke="rgba(192,86,106,.06)" stroke-width=".5" stroke-dasharray="3,3"/>
+                      <line x1="22" y1="112" x2="158" y2="112" stroke="rgba(192,86,106,.06)" stroke-width=".5" stroke-dasharray="3,3"/>
+                      <!-- Feb findings: only the ongoing one + resolved -->
+                      <circle cx="122" cy="124" r="5" fill="rgba(232,160,172,.7)" stroke="rgba(232,160,172,.9)" stroke-width="1"/>
+                      <circle cx="74" cy="132" r="5" fill="rgba(232,160,172,.5)" stroke="rgba(232,160,172,.7)" stroke-width="1"/>
+                    </svg>
+                  </div>
+                  <!-- Feb legend items -->
+                  <div style="margin-top:.35rem;display:flex;flex-direction:column;gap:.2rem;width:100%">
+                    <div style="display:flex;align-items:center;gap:.3rem;font-size:.55rem;color:rgba(255,255,255,.4)"><div style="width:.45rem;height:.45rem;border-radius:50%;background:var(--rose-soft);flex-shrink:0"></div>Rechts unten</div>
+                    <div style="display:flex;align-items:center;gap:.3rem;font-size:.55rem;color:rgba(255,255,255,.4)"><div style="width:.45rem;height:.45rem;border-radius:50%;background:var(--rose-soft);flex-shrink:0"></div>Innen links</div>
+                  </div>
+                </div>
+                <!-- Arrow -->
+                <div style="display:flex;align-items:center;padding-bottom:3rem">
+                  <div style="font-size:.9rem;color:rgba(192,86,106,.4)">→</div>
+                </div>
+                <!-- March -->
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center">
+                  <div style="font-size:.58rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.3rem">März ✦</div>
+                  <div style="background:rgba(192,86,106,.06);border:1px solid rgba(192,86,106,.25);padding:.5rem;border-radius:2px;width:100%">
+                    <svg viewBox="0 0 180 230" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+                      <path d="M 38 52 Q 22 78 20 122 Q 18 158 26 184 Q 34 206 54 212 Q 72 218 90 218 Q 108 218 126 212 Q 146 206 154 184 Q 162 158 160 122 Q 158 78 142 52 Q 128 32 114 24 Q 103 18 90 18 Q 77 18 66 24 Q 52 32 38 52 Z" fill="rgba(192,86,106,.09)" stroke="rgba(192,86,106,.3)" stroke-width="1"/>
+                      <ellipse cx="90" cy="18" rx="19" ry="11" fill="rgba(192,86,106,.1)" stroke="rgba(192,86,106,.2)" stroke-width=".6"/>
+                      <ellipse cx="64" cy="112" rx="28" ry="30" fill="rgba(192,86,106,.09)" stroke="rgba(192,86,106,.2)" stroke-width=".7"/>
+                      <ellipse cx="116" cy="112" rx="28" ry="30" fill="rgba(192,86,106,.09)" stroke="rgba(192,86,106,.2)" stroke-width=".7"/>
+                      <circle cx="64" cy="114" r="2" fill="rgba(192,86,106,.25)" stroke="rgba(192,86,106,.35)" stroke-width=".6"/>
+                      <circle cx="116" cy="114" r="2" fill="rgba(192,86,106,.25)" stroke="rgba(192,86,106,.35)" stroke-width=".6"/>
+                      <line x1="90" y1="50" x2="90" y2="195" stroke="rgba(192,86,106,.08)" stroke-width=".5" stroke-dasharray="3,3"/>
+                      <line x1="22" y1="112" x2="158" y2="112" stroke="rgba(192,86,106,.08)" stroke-width=".5" stroke-dasharray="3,3"/>
+                      <!-- März: new orange + ongoing pink + resolved green -->
+                      <circle cx="57" cy="100" r="5" fill="rgba(217,112,64,.8)" stroke="rgba(217,112,64,.95)" stroke-width="1.2"/>
+                      <circle cx="122" cy="124" r="5" fill="rgba(232,160,172,.7)" stroke="rgba(232,160,172,.9)" stroke-width="1"/>
+                      <circle cx="74" cy="132" r="5" fill="rgba(78,138,106,.75)" stroke="rgba(78,138,106,.9)" stroke-width="1"/>
+                    </svg>
+                  </div>
+                  <!-- März legend items -->
+                  <div style="margin-top:.35rem;display:flex;flex-direction:column;gap:.2rem;width:100%">
+                    <div style="display:flex;align-items:center;gap:.3rem;font-size:.55rem;color:rgba(255,255,255,.7)"><div style="width:.45rem;height:.45rem;border-radius:50%;background:#D97040;flex-shrink:0"></div><span style="color:#D97040">Neu</span> links oben</div>
+                    <div style="display:flex;align-items:center;gap:.3rem;font-size:.55rem;color:rgba(255,255,255,.4)"><div style="width:.45rem;height:.45rem;border-radius:50%;background:var(--rose-soft);flex-shrink:0"></div>Rechts unten</div>
+                    <div style="display:flex;align-items:center;gap:.3rem;font-size:.55rem;color:rgba(255,255,255,.4)"><div style="width:.45rem;height:.45rem;border-radius:50%;background:#4E8A6A;flex-shrink:0"></div><span style="color:#4E8A6A">Verheilt ✓</span></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Change summary -->
+              <div style="margin-top:.6rem;width:100%;background:rgba(255,255,255,.04);border-left:2px solid var(--rose);padding:.5rem .7rem">
+                <div style="font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--rose-soft);margin-bottom:.3rem">Veränderungen erkannt</div>
+                <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                  <div style="font-size:.6rem;padding:.15rem .5rem;background:rgba(217,112,64,.15);color:#D97040;border-radius:10px">+1 Neuer Befund</div>
+                  <div style="font-size:.6rem;padding:.15rem .5rem;background:rgba(78,138,106,.15);color:#4E8A6A;border-radius:10px">1 Abgeklungen</div>
+                  <div style="font-size:.6rem;padding:.15rem .5rem;background:rgba(232,160,172,.12);color:var(--rose-soft);border-radius:10px">1 Unverändert</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bottom-nav">
+              <div class="bnav-item" onclick="showScreen('home',0)"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></div>
+              <div class="bnav-item" onclick="showScreen('steps',1)"><div class="bnav-icon">🎯</div><div class="bnav-label">Untersuchen</div></div>
+              <div class="bnav-item active"><div class="bnav-icon">🗺️</div><div class="bnav-label">Mapping</div></div>
+              <div class="bnav-item" onclick="showScreen('diary',3)"><div class="bnav-icon">📓</div><div class="bnav-label">Tagebuch</div></div>
+              <div class="bnav-item" onclick="showScreen('chat',4)"><div class="bnav-icon">💬</div><div class="bnav-label">Chat</div></div>
+            </div>
+          </div>
+
+          <!-- DIARY -->
+          <div class="app-screen" id="sc-diary">
+            <div class="status-bar" style="color:var(--ink);z-index:50"><div class="status-time">9:41</div><div>●●● 🔋</div></div>
+            <div class="diary-header"><h2>Befund-Tagebuch</h2><p>Alle Untersuchungen im Überblick</p></div>
+            <div class="diary-body">
+              <div class="diary-month">März 2025</div>
+              <div class="diary-entry new"><div class="de-top"><div class="de-date">15. März 2025</div><div class="de-badge new">Neu</div></div><div class="de-title">Monatliche Untersuchung</div><div class="de-findings"><div class="de-tag">1 neuer Befund</div><div class="de-tag">Links oben</div></div></div>
+              <div class="diary-month">Februar 2025</div>
+              <div class="diary-entry warn"><div class="de-top"><div class="de-date">12. Februar 2025</div><div class="de-badge warn">Beobachten</div></div><div class="de-title">Monatliche Untersuchung</div><div class="de-findings"><div class="de-tag">Rechts unten</div><div class="de-tag">Unverändert</div></div></div>
+              <div class="diary-month">Jänner 2025</div>
+              <div class="diary-entry ok"><div class="de-top"><div class="de-date">10. Jänner 2025</div><div class="de-badge ok">Alles gut</div></div><div class="de-title">Monatliche Untersuchung</div><div class="de-findings"><div class="de-tag">Abgeklungen ✓</div></div></div>
+            </div>
+            <button class="diary-add">+</button>
+            <div class="bottom-nav">
+              <div class="bnav-item" onclick="showScreen('home',0)"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></div>
+              <div class="bnav-item" onclick="showScreen('steps',1)"><div class="bnav-icon">🎯</div><div class="bnav-label">Untersuchen</div></div>
+              <div class="bnav-item" onclick="showScreen('map',2)"><div class="bnav-icon">🗺️</div><div class="bnav-label">Mapping</div></div>
+              <div class="bnav-item active"><div class="bnav-icon">📓</div><div class="bnav-label">Tagebuch</div></div>
+              <div class="bnav-item" onclick="showScreen('chat',4)"><div class="bnav-icon">💬</div><div class="bnav-label">Chat</div></div>
+            </div>
+          </div>
+
+          <!-- CHAT -->
+          <div class="app-screen" id="sc-chat">
+            <div class="status-bar" style="color:var(--ink);z-index:50"><div class="status-time">9:41</div><div>●●● 🔋</div></div>
+            <div class="chat-header"><div class="chat-avatar">🌸</div><div><div class="chat-name">Fembloom KI-Assistentin</div><div class="chat-status">Online · Bereit zu helfen</div></div></div>
+            <div class="chat-body" id="chatBody">
+              <div class="msg ai"><div class="msg-bubble">Hallo Sarah! 🌸 Ich bin deine persönliche Assistentin. Wie kann ich dir heute helfen?</div><div class="msg-time">9:38</div></div>
+              <div class="msg user"><div class="msg-bubble">Wie oft soll ich mich untersuchen?</div><div class="msg-time">9:39</div></div>
+              <div class="msg ai"><div class="msg-bubble">Ich empfehle <strong>einmal monatlich</strong> — immer zur gleichen Zeit im Zyklus. Das macht Veränderungen viel leichter erkennbar. 💪</div><div class="msg-time">9:39</div></div>
+              <div class="msg user"><div class="msg-bubble">Was bedeutet ein harter Knoten?</div><div class="msg-time">9:40</div></div>
+              <div class="msg ai" id="typingMsg" style="display:none"><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>
+            </div>
+            <div class="chat-input-wrap"><input class="chat-input" id="chatInput" placeholder="Frage stellen…" onkeydown="handleChat(event)"><button class="chat-send" onclick="sendChat()">➤</button></div>
+            <div class="bottom-nav">
+              <div class="bnav-item" onclick="showScreen('home',0)"><div class="bnav-icon">🏠</div><div class="bnav-label">Home</div></div>
+              <div class="bnav-item" onclick="showScreen('steps',1)"><div class="bnav-icon">🎯</div><div class="bnav-label">Untersuchen</div></div>
+              <div class="bnav-item" onclick="showScreen('map',2)"><div class="bnav-icon">🗺️</div><div class="bnav-label">Mapping</div></div>
+              <div class="bnav-item" onclick="showScreen('diary',3)"><div class="bnav-icon">📓</div><div class="bnav-label">Tagebuch</div></div>
+              <div class="bnav-item active"><div class="bnav-icon">💬</div><div class="bnav-label">Chat</div></div>
+            </div>
+          </div>
+
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right-panel">
+      <div class="rp-card" id="rpCard">
+        <div class="rp-label">Aktiver Screen</div>
+        <div class="rp-title" id="rpTitle">Home & <em>Dashboard</em></div>
+        <div class="rp-text" id="rpText">Persönliche Begrüßung, Streak-Anzeige, nächster Termin und Tipp des Tages.</div>
+        <div class="rp-pills" id="rpPills"><div class="rp-pill">Personalisiert</div><div class="rp-pill">Streak</div><div class="rp-pill">Quick-Start</div></div>
+      </div>
+      <div class="rp-card">
+        <div class="rp-label">App-Fortschritt</div>
+        <div class="progress-ring">
+          <div class="pr-row"><div class="pr-label">Onboarding</div><div class="pr-bar"><div class="pr-fill" style="width:100%"></div></div><div class="pr-pct">100%</div></div>
+          <div class="pr-row"><div class="pr-label">Videos</div><div class="pr-bar"><div class="pr-fill" style="width:58%"></div></div><div class="pr-pct">58%</div></div>
+          <div class="pr-row"><div class="pr-label">Mapping</div><div class="pr-bar"><div class="pr-fill" style="width:75%"></div></div><div class="pr-pct">75%</div></div>
+          <div class="pr-row"><div class="pr-label">Streak</div><div class="pr-bar"><div class="pr-fill" style="width:80%"></div></div><div class="pr-pct">4 Mon.</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══ CURSOR ══
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=window.innerWidth/2,my=window.innerHeight/2,rx=mx,ry=my;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(a);})();
+function bigCursor(){cd.style.width='12px';cd.style.height='12px';cr.style.width='48px';cr.style.height='48px';}
+function normCursor(){cd.style.width='6px';cd.style.height='6px';cr.style.width='30px';cr.style.height='30px';}
+
+// ══ INTRO CANVASES ══
+(function(){
+  const c1=document.getElementById('c1'),x1=c1.getContext('2d');
+  const c2=document.getElementById('c2'),x2=c2.getContext('2d');
+  const c3=document.getElementById('c3'),x3=c3.getContext('2d');
+  let W,H;
+  function resize(){
+    W=window.innerWidth;H=window.innerHeight;
+    [c1,c2,c3].forEach(c=>{c.width=W;c.height=H;});
+  }
+  resize();window.addEventListener('resize',resize);
+
+  // Nebula
+  const blobs=[
+    {x:.25,y:.4,r:.35,c:'122,46,62',a:.12,spd:.00012,ph:0},
+    {x:.75,y:.6,r:.3,c:'192,86,106',a:.08,spd:.00018,ph:2},
+    {x:.5,y:.2,r:.25,c:'184,148,90',a:.06,spd:.00014,ph:4},
+    {x:.15,y:.75,r:.2,c:'122,46,62',a:.07,spd:.0002,ph:1},
+    {x:.85,y:.25,r:.22,c:'192,86,106',a:.05,spd:.00016,ph:3},
+  ];
+  function loopNebula(t){
+    requestAnimationFrame(loopNebula);
+    x1.clearRect(0,0,W,H);
+    blobs.forEach(b=>{
+      const pulse=1+Math.sin(t*b.spd*1000+b.ph)*.15;
+      const r=Math.min(W,H)*b.r*pulse;
+      const bx=b.x*W+Math.sin(t*b.spd*600+b.ph)*W*.04;
+      const by=b.y*H+Math.cos(t*b.spd*800+b.ph)*H*.04;
+      const g=x1.createRadialGradient(bx,by,0,bx,by,r);
+      g.addColorStop(0,`rgba(${b.c},${b.a})`);
+      g.addColorStop(.5,`rgba(${b.c},${b.a*.4})`);
+      g.addColorStop(1,`rgba(${b.c},0)`);
+      x1.beginPath();x1.arc(bx,by,r,0,Math.PI*2);x1.fillStyle=g;x1.fill();
+    });
+  }
+  requestAnimationFrame(loopNebula);
+
+  // Petals
+  const petals=Array.from({length:38},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*5.5,vx:(Math.random()-.5)*.22,vy:-.07-Math.random()*.18,rot:Math.random()*Math.PI*2,vrot:(Math.random()-.5)*.011,alpha:.04+Math.random()*.11,phase:Math.random()*Math.PI*2,col:Math.random()>.4?'192,86,106':'232,160,172'}));
+  function drawPetal(cx,p){cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);cx.beginPath();cx.moveTo(0,-p.r*2);cx.bezierCurveTo(p.r*1.1,-p.r*.7,p.r*1.1,p.r*.7,0,p.r*1.7);cx.bezierCurveTo(-p.r*1.1,p.r*.7,-p.r*1.1,-p.r*.7,0,-p.r*2);cx.fillStyle=`rgba(${p.col},${p.alpha})`;cx.fill();cx.restore();}
+  function loopPetals(t){
+    requestAnimationFrame(loopPetals);
+    x2.clearRect(0,0,W,H);
+    petals.forEach(p=>{p.x+=p.vx+Math.sin(t*.0007+p.phase)*.18;p.y+=p.vy;p.rot+=p.vrot;if(p.y<-20){p.y=H+20;p.x=Math.random()*W;}drawPetal(x2,p);});
+  }
+  requestAnimationFrame(loopPetals);
+
+  // Rings
+  const rings=[];
+  function spawnRing(){rings.push({x:W*.5+(Math.random()-.5)*W*.1,y:H*.45+(Math.random()-.5)*H*.06,r:0,a:.1+Math.random()*.07,spd:.4+Math.random()*.35,col:Math.random()>.5?'192,86,106':'232,160,172'});}
+  setInterval(spawnRing,700);spawnRing();spawnRing();
+  setInterval(()=>rings.push({x:Math.random()*W,y:Math.random()*H,r:0,a:.04,spd:.28,col:'192,86,106'}),1500);
+  function loopRings(){
+    requestAnimationFrame(loopRings);
+    x3.clearRect(0,0,W,H);
+    for(let i=rings.length-1;i>=0;i--){const rg=rings[i];rg.r+=rg.spd;rg.a-=.001;if(rg.a<=0){rings.splice(i,1);continue;}x3.beginPath();x3.arc(rg.x,rg.y,rg.r,0,Math.PI*2);x3.strokeStyle=`rgba(${rg.col},${rg.a})`;x3.lineWidth=1+rg.a*3;x3.stroke();}
+  }
+  requestAnimationFrame(loopRings);
+})();
+
+// ══ DEMO BG CANVAS ══
+(function(){
+  const cv=document.getElementById('bgDemo'),cx=cv.getContext('2d');
+  let W,H;
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  const pts=Array.from({length:35},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*2.5,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.14,a:.03+Math.random()*.07,c:Math.random()>.5?'192,86,106':'232,160,172'}));
+  const orbs=[{x:.2,y:.3,r:.28,c:'192,86,106',a:.04},{x:.8,y:.65,r:.22,c:'122,46,62',a:.05},{x:.55,y:.15,r:.18,c:'184,148,90',a:.03}];
+  function loop(){
+    requestAnimationFrame(loop);
+    cx.clearRect(0,0,W,H);
+    orbs.forEach(o=>{const g=cx.createRadialGradient(o.x*W,o.y*H,0,o.x*W,o.y*H,o.r*Math.min(W,H));g.addColorStop(0,`rgba(${o.c},${o.a})`);g.addColorStop(1,`rgba(${o.c},0)`);cx.beginPath();cx.arc(o.x*W,o.y*H,o.r*Math.min(W,H),0,Math.PI*2);cx.fillStyle=g;cx.fill();});
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fillStyle=`rgba(${p.c},${p.a})`;cx.fill();});
+  }
+  requestAnimationFrame(loop);
+})();
+
+// ══ INTRO → DEMO TRANSITION ══
+document.getElementById('showDemo').addEventListener('mouseenter',bigCursor);
+document.getElementById('showDemo').addEventListener('mouseleave',normCursor);
+document.getElementById('showDemo').addEventListener('click',()=>{
+  const ov=document.getElementById('tOverlay');
+  ov.classList.add('go');
+  setTimeout(()=>{
+    document.getElementById('intro').style.display='none';
+    document.getElementById('demo').classList.add('active');
+    ov.style.transition='opacity .6s ease';
+    ov.classList.remove('go');
+  },800);
+});
+
+// Heartbeat on logo
+(function(){
+  const logo=document.querySelector('.intro-logo');
+  if(!logo)return;
+  setInterval(()=>{logo.style.transition='transform .12s,filter .12s';logo.style.transform='scale(1.008)';logo.style.filter='brightness(1.08)';setTimeout(()=>{logo.style.transform='scale(1)';logo.style.filter='brightness(1)';},120);},2800);
+})();
+
+// ══ SCREEN SWITCHING ══
+const SCREENS={
+  home: {title:'Home & <em>Dashboard</em>',text:'Persönliche Begrüßung, Streak-Anzeige, nächster Termin und Tipp des Tages.',pills:['Personalisiert','Streak','Quick-Start'],desc:'Das <strong>Dashboard</strong> zeigt den nächsten Termin, die Streak-Übersicht und Tipp des Tages.'},
+  steps:{title:'7-Schritte <em>Untersuchung</em>',text:'Schritt-für-Schritt durch die zertifizierte Methode. Fortschritt tracken, kein Schritt vergessen.',pills:['Geführt','Fortschritt','Interaktiv'],desc:'Die <strong>geführte Untersuchung</strong> begleitet durch die zertifizierte Methode mit Fortschrittsanzeige.'},
+  map:  {title:'Interaktives <em>Brust-Mapping</em>',text:'Das weltweite Alleinstellungsmerkmal: Befunde auf der Silhouette markieren, monatlich vergleichen.',pills:['Einzigartig weltweit','Farbkodiert','Vergleich'],desc:'Das <strong>Brust-Mapping</strong> ist das Herzstück — weltweit einzigartig, monatlicher Farbvergleich.'},
+  diary:{title:'Befund-<em>Tagebuch</em>',text:'Lückenlose Chronik aller Untersuchungen — farbkodiert, ideal für den Arzttermin.',pills:['Chronologisch','Farbkodiert','Arzttermin'],desc:'Das <strong>Tagebuch</strong> dokumentiert jeden Befund chronologisch und farbkodiert.'},
+  chat: {title:'KI-Chat <em>Assistentin</em>',text:'Fragen zur Technik und Methode — jederzeit beantwortet, 24/7 verfügbar.',pills:['Claude AI','24/7','Empathisch'],desc:'Die <strong>KI-Assistentin</strong> beantwortet Fragen zur Methode jederzeit ohne Wartezeit.'}
+};
+const SC_IDS=['home','steps','map','diary','chat'];
+let current='home';
+function showScreen(name,idx){
+  if(name===current)return;
+  const prev=document.getElementById('sc-'+current);
+  const next=document.getElementById('sc-'+name);
+  prev.classList.remove('active');prev.classList.add('exit');
+  setTimeout(()=>prev.classList.remove('exit'),400);
+  next.classList.add('active');
+  current=name;
+  document.querySelectorAll('.snav-item').forEach((el,i)=>el.classList.toggle('active',i===idx));
+  const d=SCREENS[name];
+  document.getElementById('rpTitle').innerHTML=d.title;
+  document.getElementById('rpText').textContent=d.text;
+  document.getElementById('rpPills').innerHTML=d.pills.map(p=>`<div class="rp-pill">${p}</div>`).join('');
+  document.getElementById('sideDesc').innerHTML=`<p>${d.desc}</p>`;
+  const rc=document.getElementById('rpCard');
+  rc.style.cssText+='opacity:0;transform:translateY(8px)';
+  setTimeout(()=>{rc.style.transition='opacity .35s,transform .35s';rc.style.opacity='1';rc.style.transform='none';},30);
+}
+
+// ══ MAP MODE TOGGLE ══
+let mapCompareMode=false;
+function toggleMapMode(){
+  mapCompareMode=!mapCompareMode;
+  const single=document.getElementById('mapSingleView');
+  const compare=document.getElementById('mapCompareView');
+  const btn=document.getElementById('mapModeBtn');
+  const lbl=document.getElementById('mapMonthLabel');
+  if(mapCompareMode){
+    single.style.display='none';
+    compare.style.display='flex';
+    compare.style.opacity='0';
+    compare.style.transform='translateX(20px)';
+    compare.style.transition='opacity .4s,transform .4s';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{compare.style.opacity='1';compare.style.transform='none';}));
+    btn.textContent='Aktuelle Ansicht';
+    btn.style.background='rgba(78,138,106,.2)';
+    btn.style.borderColor='rgba(78,138,106,.4)';
+    btn.style.color='#4E8A6A';
+    lbl.textContent='Feb → Mär 2025 · Monatsvergleich';
+  } else {
+    compare.style.display='none';
+    single.style.display='flex';
+    btn.textContent='Vergleich';
+    btn.style.background='rgba(192,86,106,.2)';
+    btn.style.borderColor='rgba(192,86,106,.3)';
+    btn.style.color='var(--rose-soft)';
+    lbl.textContent='März 2025 · Tippe zum Markieren';
+  }
+}
+
+// ══ MAP ══
+const mapSvg=document.getElementById('mapSvg'),mapUd=document.getElementById('mapUserDots');
+let mIdx=0;
+const MC=[{f:'rgba(217,112,64,.8)',s:'rgba(217,112,64,1)'},{f:'rgba(232,160,172,.8)',s:'rgba(232,160,172,1)'},{f:'rgba(78,138,106,.8)',s:'rgba(78,138,106,1)'}];
+mapSvg.addEventListener('click',e=>{
+  const r=mapSvg.getBoundingClientRect();
+  const x=(e.clientX-r.left)*(180/r.width),y=(e.clientY-r.top)*(230/r.height);
+  if(y<12||y>218)return;
+  const col=MC[mIdx%3];mIdx++;
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r','0');
+  c.setAttribute('fill',col.f);c.setAttribute('stroke',col.s);c.setAttribute('stroke-width','1');
+  c.style.transition='r .3s ease';mapUd.appendChild(c);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>c.setAttribute('r','5.5')));
+  const p=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  p.setAttribute('cx',x);p.setAttribute('cy',y);p.setAttribute('r','5.5');
+  p.setAttribute('fill','none');p.setAttribute('stroke',col.s);p.setAttribute('stroke-width','1');
+  p.style.animation='mpulse .6s ease forwards';mapUd.appendChild(p);
+  setTimeout(()=>p.remove(),650);
+});
+const ms=document.createElement('style');ms.textContent='@keyframes mpulse{from{r:5.5;opacity:.7}to{r:18;opacity:0}}';document.head.appendChild(ms);
+
+// ══ STEPS ══
+document.querySelectorAll('.step-done').forEach(el=>{
+  el.addEventListener('click',()=>{
+    el.classList.toggle('checked');
+    const checked=document.querySelectorAll('.step-done.checked').length;
+    const total=document.querySelectorAll('.step-done').length;
+    document.getElementById('stepsBar').style.width=Math.round(checked/total*100)+'%';
+    document.getElementById('stepsCounter').textContent=`Schritt ${checked} von ${total}`;
+  });
+});
+
+// ══ CHAT ══
+const REPLIES=['Ein harter, nicht verschieblicher Knoten sollte immer von einer Ärztin abgeklärt werden. Die meisten sind gutartig — aber frühzeitige Kontrolle ist wichtig. 🩺','Die Fembloom-Methode empfiehlt systematisches Abtasten in konzentrischen Kreisen — vom Äußeren nach innen, mit leichtem Druck.','Regelmäßigkeit ist der Schlüssel — einmal im Monat, immer zur gleichen Zeit im Zyklus. 💪','Das ist eine sehr gute Frage! Dein Mapping hilft dir, Unterschiede von Monat zu Monat sofort zu erkennen.'];
+let rIdx=0;
+function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const val=inp.value.trim();if(!val)return;
+  const cb=document.getElementById('chatBody');
+  const um=document.createElement('div');um.className='msg user';
+  um.innerHTML=`<div class="msg-bubble">${val}</div><div class="msg-time">Jetzt</div>`;
+  cb.appendChild(um);inp.value='';
+  const tm=document.getElementById('typingMsg');tm.style.display='flex';
+  cb.scrollTop=cb.scrollHeight;
+  setTimeout(()=>{
+    tm.style.display='none';
+    const am=document.createElement('div');am.className='msg ai';
+    am.innerHTML=`<div class="msg-bubble">${REPLIES[rIdx%REPLIES.length]}</div><div class="msg-time">Jetzt</div>`;
+    cb.insertBefore(am,tm);rIdx++;cb.scrollTop=cb.scrollHeight;
+  },1800);
+}
+function handleChat(e){if(e.key==='Enter')sendChat();}
+
+// Hover effects
+document.querySelectorAll('.snav-item,.bnav-item,.home-next-btn,.chat-send,.intro-cta,.map-mode-btn,.diary-add,.step-done').forEach(el=>{
+  el.addEventListener('mouseenter',bigCursor);
+  el.addEventListener('mouseleave',normCursor);
+});
+</script>
+</body>
+</html>
