@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fembloom — Instagram Templates</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,700;1,300;1,400&family=DM+Sans:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#111;font-family:'DM Sans',sans-serif;cursor:none;overflow-x:hidden}
+
+/* CURSOR */
+#cd{position:fixed;width:8px;height:8px;background:#E8A0AC;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9999}
+#cr{position:fixed;width:28px;height:28px;border:1px solid rgba(232,160,172,.4);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:9998;transition:width .25s,height .25s}
+
+/* LAYOUT */
+.header{
+  padding:2rem 3rem 1.5rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.header-brand{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;font-weight:300;color:#fff;
+}
+.header-brand em{color:#E8A0AC;font-style:italic}
+.header-sub{font-size:.72rem;color:rgba(255,255,255,.3);letter-spacing:.15em;text-transform:uppercase;margin-top:.2rem}
+.header-tip{
+  font-size:.78rem;color:rgba(255,255,255,.4);
+  background:rgba(255,255,255,.06);
+  padding:.5rem 1rem;border-radius:4px;
+}
+
+.nav-tabs{
+  display:flex;gap:0;
+  padding:0 3rem;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  overflow-x:auto;
+}
+.tab{
+  padding:.9rem 1.4rem;
+  font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+  border-bottom:2px solid transparent;
+  cursor:none;white-space:nowrap;
+  transition:color .25s,border-color .25s;
+}
+.tab.active{color:#E8A0AC;border-bottom-color:#C0566A}
+.tab:hover{color:rgba(255,255,255,.7)}
+
+.main{
+  display:flex;gap:0;
+  min-height:calc(100vh - 120px);
+}
+
+/* POST GRID */
+.post-grid{
+  width:320px;flex-shrink:0;
+  border-right:1px solid rgba(255,255,255,.08);
+  padding:1.5rem;
+  display:flex;flex-direction:column;gap:.7rem;
+  overflow-y:auto;max-height:calc(100vh - 120px);
+}
+.post-thumb{
+  display:flex;align-items:center;gap:.8rem;
+  padding:.7rem .9rem;
+  border:1px solid rgba(255,255,255,.07);
+  cursor:none;transition:all .25s;
+  position:relative;
+}
+.post-thumb:hover{background:rgba(255,255,255,.04);border-color:rgba(192,86,106,.3)}
+.post-thumb.active{background:rgba(192,86,106,.1);border-color:rgba(192,86,106,.5)}
+.post-thumb.active::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:#C0566A;
+}
+.thumb-preview{
+  width:48px;height:48px;border-radius:3px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+}
+.thumb-info{}
+.thumb-num{font-size:.6rem;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase}
+.thumb-title{font-size:.8rem;color:rgba(255,255,255,.75);margin-top:.1rem;line-height:1.3}
+.thumb-type{
+  font-size:.58rem;padding:.12rem .45rem;border-radius:10px;
+  margin-top:.3rem;display:inline-block;
+}
+.thumb-type.reel{background:rgba(192,86,106,.2);color:#E8A0AC}
+.thumb-type.post{background:rgba(184,148,90,.2);color:#C4965A}
+.thumb-type.carousel{background:rgba(78,138,106,.2);color:#7ABFA0}
+
+/* PREVIEW AREA */
+.preview-area{
+  flex:1;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:2rem;
+  gap:3rem;
+  overflow-y:auto;
+}
+
+/* INSTAGRAM POST CANVAS — 1:1 square */
+.post-canvas{
+  width:480px;height:480px;
+  flex-shrink:0;
+  position:relative;
+  overflow:hidden;
+}
+
+/* POST DESIGNS */
+.design{display:none;width:100%;height:100%;position:absolute;inset:0;}
+.design.active{display:flex;align-items:center;justify-content:center}
+
+/* P1 — Reel teaser */
+#p1{background:#060204;flex-direction:column;text-align:center}
+.p1-num{
+  font-family:'Playfair Display',serif;
+  font-size:5.5rem;font-weight:300;color:#fff;
+  line-height:1;letter-spacing:-.02em;
+  animation:p1Num 1s ease both;
+}
+@keyframes p1Num{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.p1-sub{
+  font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;
+  color:rgba(255,255,255,.4);margin-top:.5rem;
+}
+.p1-desc{
+  font-size:1rem;color:rgba(255,255,255,.6);
+  margin-top:.9rem;line-height:1.6;
+}
+.p1-logo{
+  position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);
+  font-family:'Playfair Display',serif;
+  font-size:.9rem;font-weight:300;color:rgba(255,255,255,.3);
+  letter-spacing:.08em;
+}
+.p1-logo em{color:rgba(232,160,172,.5);font-style:italic}
+.p1-rose-line{
+  width:60px;height:1px;
+  background:linear-gradient(to right,transparent,#C0566A,transparent);
+  margin:.7rem auto;
+}
+
+/* P2 — 1:8 stat */
+#p2{
+  background:linear-gradient(135deg,#1A0810 0%,#060204 100%);
+  flex-direction:column;text-align:center;padding:3rem;
+}
+.p2-big{
+  font-family:'Playfair Display',serif;
+  font-size:7rem;font-weight:300;color:#fff;
+  line-height:1;letter-spacing:-.02em;
+}
+.p2-big em{color:#E8A0AC;font-style:italic;font-size:5rem}
+.p2-text{
+  font-size:.9rem;color:rgba(255,255,255,.5);
+  margin-top:1.2rem;line-height:1.7;
+  max-width:280px;
+}
+.p2-text strong{color:rgba(255,255,255,.8);font-weight:400}
+.p2-tag{
+  position:absolute;bottom:1.8rem;right:1.8rem;
+  font-size:.68rem;color:rgba(255,255,255,.2);
+  letter-spacing:.1em;text-transform:uppercase;
+}
+
+/* P3 — Question */
+#p3{
+  background:#0D0608;
+  flex-direction:column;text-align:center;padding:3rem;
+}
+.p3-q{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;font-weight:300;font-style:italic;
+  color:#fff;line-height:1.4;max-width:340px;
+}
+.p3-q em{color:#E8A0AC;font-style:normal}
+.p3-line{width:40px;height:1px;background:rgba(192,86,106,.4);margin:1.5rem auto}
+.p3-answer{font-size:.82rem;color:rgba(255,255,255,.35);line-height:1.6;max-width:300px}
+
+/* P4 — Quote */
+#p4{
+  background:linear-gradient(135deg,#7A2E3E,#C0566A);
+  flex-direction:column;text-align:center;padding:3.5rem;
+}
+.p4-qm{
+  font-family:'Playfair Display',serif;
+  font-size:6rem;font-weight:700;
+  color:rgba(255,255,255,.15);
+  line-height:.7;align-self:flex-start;margin-bottom:-.5rem;
+}
+.p4-q{
+  font-family:'Playfair Display',serif;
+  font-size:1.55rem;font-weight:300;font-style:italic;
+  color:#fff;line-height:1.45;
+}
+.p4-attr{
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin-top:1.2rem;
+  display:flex;align-items:center;justify-content:center;gap:.6rem;
+}
+.p4-attr::before,.p4-attr::after{content:'';width:1.5rem;height:1px;background:rgba(255,255,255,.3)}
+
+/* P5 — Silhouette teaser */
+#p5{background:#060204;flex-direction:column;align-items:center;justify-content:center}
+.p5-svg-wrap{
+  width:200px;height:240px;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.p5-glow{
+  position:absolute;width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(192,86,106,.2),transparent 70%);
+  filter:blur(20px);
+}
+.p5-label{
+  font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.3);margin-top:1rem;text-align:center;
+}
+.p5-coming{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;font-weight:300;font-style:italic;
+  color:rgba(232,160,172,.6);margin-top:.4rem;
+}
+
+/* P6 — Carousel moment */
+#p6{
+  background:#0D0608;
+  flex-direction:column;text-align:center;padding:3rem;
+  position:relative;
+}
+.p6-slide{display:none;flex-direction:column;align-items:center;justify-content:center;height:100%}
+.p6-slide.active{display:flex}
+.p6-text{
+  font-family:'Playfair Display',serif;
+  font-size:2rem;font-weight:300;color:#fff;
+  line-height:1.3;
+}
+.p6-text em{color:#E8A0AC;font-style:italic}
+.p6-dots{
+  position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:.4rem;
+}
+.p6-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.2)}
+.p6-dot.active{background:#C0566A}
+.p6-nav{
+  position:absolute;bottom:3.5rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:1rem;
+}
+.p6-btn{
+  font-size:.65rem;padding:.3rem .8rem;
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.1);
+  cursor:none;transition:all .25s;letter-spacing:.08em;text-transform:uppercase;
+}
+.p6-btn:hover{background:rgba(192,86,106,.2);border-color:rgba(192,86,106,.4);color:#E8A0AC}
+
+/* P7 — Behind the scenes */
+#p7{
+  background:linear-gradient(160deg,#1A0810,#0D0608);
+  flex-direction:column;text-align:center;padding:3rem;
+}
+.p7-icon{font-size:3rem;margin-bottom:1.2rem}
+.p7-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.4rem;font-weight:300;color:#fff;
+  line-height:1.35;margin-bottom:.9rem;
+}
+.p7-title em{color:#E8A0AC;font-style:italic}
+.p7-text{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.7;max-width:320px}
+.p7-badge{
+  margin-top:1.4rem;
+  font-size:.65rem;padding:.3rem .9rem;
+  background:rgba(192,86,106,.2);color:#E8A0AC;
+  border:1px solid rgba(192,86,106,.3);
+  letter-spacing:.1em;text-transform:uppercase;
+}
+
+/* P8 — Waitlist */
+#p8{
+  background:#060204;
+  flex-direction:column;text-align:center;padding:3rem;
+}
+.p8-ring{
+  width:120px;height:120px;border-radius:50%;
+  border:1px solid rgba(192,86,106,.3);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.5rem;
+  position:relative;
+}
+.p8-ring::before{
+  content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(192,86,106,.12);
+}
+.p8-ring-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-weight:300;color:#fff;
+}
+.p8-ring-logo em{color:#E8A0AC;font-style:italic}
+.p8-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;font-weight:300;color:#fff;
+  margin-bottom:.7rem;line-height:1.3;
+}
+.p8-sub{font-size:.85rem;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:1.4rem}
+.p8-cta{
+  font-size:.72rem;padding:.6rem 1.6rem;
+  background:rgba(192,86,106,.15);color:#E8A0AC;
+  border:1px solid rgba(192,86,106,.4);
+  letter-spacing:.12em;text-transform:uppercase;
+}
+
+/* P9 — Engagement question */
+#p9{
+  background:linear-gradient(135deg,#0D0608,#1A0810);
+  flex-direction:column;text-align:center;padding:3rem;
+}
+.p9-q{
+  font-family:'Playfair Display',serif;
+  font-size:1.45rem;font-weight:300;font-style:italic;
+  color:#fff;line-height:1.4;max-width:320px;margin-bottom:1.5rem;
+}
+.p9-options{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap}
+.p9-opt{
+  font-size:.8rem;padding:.5rem 1.2rem;
+  border:1px solid rgba(192,86,106,.3);
+  color:rgba(255,255,255,.6);
+  border-radius:50px;
+}
+.p9-opt.yes{border-color:#E8A0AC;color:#E8A0AC}
+.p9-hint{
+  font-size:.68rem;color:rgba(255,255,255,.25);
+  margin-top:1.5rem;letter-spacing:.1em;text-transform:uppercase;
+}
+
+/* INFO PANEL */
+.info-panel{
+  width:320px;flex-shrink:0;
+  display:flex;flex-direction:column;gap:1.2rem;
+}
+.info-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  padding:1.2rem;
+}
+.info-label{
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(232,160,172,.6);margin-bottom:.6rem;
+  display:flex;align-items:center;gap:.5rem;
+}
+.info-label::before{content:'';width:.8rem;height:1px;background:rgba(232,160,172,.4)}
+.info-title{
+  font-family:'Playfair Display',serif;
+  font-size:1rem;font-weight:300;color:#fff;
+  line-height:1.3;margin-bottom:.5rem;
+}
+.info-title em{color:#E8A0AC;font-style:italic}
+.info-text{font-size:.78rem;color:rgba(255,255,255,.4);line-height:1.6}
+.caption-box{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  padding:1.2rem;
+}
+.caption-text{
+  font-size:.82rem;color:rgba(255,255,255,.6);
+  line-height:1.7;white-space:pre-line;
+}
+.hashtags{
+  font-size:.75rem;color:rgba(192,86,106,.6);
+  margin-top:.7rem;line-height:1.8;
+}
+.copy-btn{
+  margin-top:.8rem;width:100%;
+  background:rgba(192,86,106,.15);color:#E8A0AC;
+  border:1px solid rgba(192,86,106,.3);
+  padding:.5rem;font-family:'DM Sans',sans-serif;
+  font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  cursor:none;transition:all .25s;
+}
+.copy-btn:hover{background:rgba(192,86,106,.3)}
+.export-hint{
+  font-size:.7rem;color:rgba(255,255,255,.2);
+  line-height:1.6;padding:.8rem;
+  border:1px solid rgba(255,255,255,.06);
+  background:rgba(255,255,255,.02);
+}
+</style>
+</head>
+<body>
+<div id="cd"></div>
+<div id="cr"></div>
+
+<div class="header">
+  <div>
+    <div class="header-brand">Fem<em>bloom</em></div>
+    <div class="header-sub">Instagram Content Templates · 9 Posts</div>
+  </div>
+  <div class="header-tip">💡 Klicke links auf einen Post zum Vorschauen</div>
+</div>
+
+<div class="nav-tabs">
+  <div class="tab active" onclick="switchTab('grid')">Grid-Übersicht</div>
+  <div class="tab" onclick="switchTab('reel')">Reels</div>
+  <div class="tab" onclick="switchTab('captions')">Captions</div>
+  <div class="tab" onclick="switchTab('hashtags')">Hashtags</div>
+</div>
+
+<div class="main">
+
+  <!-- LEFT: Post list -->
+  <div class="post-grid">
+    <div class="post-thumb active" onclick="showPost(1)">
+      <div class="thumb-preview" style="background:linear-gradient(135deg,#1A0810,#060204)">🎬</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 01 · Woche 1</div>
+        <div class="thumb-title">Das 4.000.000 Reel</div>
+        <span class="thumb-type reel">Reel</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(2)">
+      <div class="thumb-preview" style="background:linear-gradient(135deg,#1A0810,#060204);color:#E8A0AC;font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:300">1:8</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 02 · Woche 1</div>
+        <div class="thumb-title">Die Zahl 1:8</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(3)">
+      <div class="thumb-preview" style="background:#0D0608;color:rgba(255,255,255,.4);font-size:.7rem;text-align:center;padding:.3rem">?</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 03 · Woche 1</div>
+        <div class="thumb-title">Die Frage</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(4)">
+      <div class="thumb-preview" style="background:linear-gradient(135deg,#7A2E3E,#C0566A)">💬</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 04 · Woche 2</div>
+        <div class="thumb-title">Das Zitat</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(5)">
+      <div class="thumb-preview" style="background:#060204">🌸</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 05 · Woche 2</div>
+        <div class="thumb-title">Die Silhouette</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(6)">
+      <div class="thumb-preview" style="background:#0D0608;color:rgba(255,255,255,.5);font-size:.6rem;text-align:center;padding:.3rem">1/5</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 06 · Woche 2</div>
+        <div class="thumb-title">Der Moment</div>
+        <span class="thumb-type carousel">Carousel</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(7)">
+      <div class="thumb-preview" style="background:linear-gradient(160deg,#1A0810,#0D0608)">👩‍⚕️</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 07 · Woche 3</div>
+        <div class="thumb-title">Behind the Scenes</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(8)">
+      <div class="thumb-preview" style="background:#060204">📩</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 08 · Woche 3</div>
+        <div class="thumb-title">Waitlist</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+    <div class="post-thumb" onclick="showPost(9)">
+      <div class="thumb-preview" style="background:linear-gradient(135deg,#0D0608,#1A0810)">❓</div>
+      <div class="thumb-info">
+        <div class="thumb-num">Post 09 · Woche 3</div>
+        <div class="thumb-title">Engagement</div>
+        <span class="thumb-type post">Post</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER: Preview -->
+  <div class="preview-area">
+    <div style="display:flex;flex-direction:column;gap:1rem;align-items:center">
+      <div class="post-canvas">
+
+        <!-- P1 -->
+        <div class="design active" id="p1">
+          <div style="text-align:center">
+            <div class="p1-num">4.000.000</div>
+            <div class="p1-sub">Frauen leben in Österreich.</div>
+            <div class="p1-rose-line"></div>
+            <div class="p1-desc">Für dich. Für sie. Für alle.</div>
+          </div>
+          <div class="p1-logo">Fem<em>bloom</em> · coming soon</div>
+        </div>
+
+        <!-- P2 -->
+        <div class="design" id="p2">
+          <div style="text-align:center">
+            <div class="p2-big">1<em>:8</em></div>
+            <div class="p2-text">Jede achte Frau wird in ihrem Leben betroffen.<br><strong>Das sind Mütter. Schwestern. Freundinnen.</strong></div>
+          </div>
+          <div class="p2-tag">@fembloom.app</div>
+        </div>
+
+        <!-- P3 -->
+        <div class="design" id="p3">
+          <p class="p3-q">Wann hast du zuletzt gewusst ob sich <em>etwas verändert</em> hat?</p>
+          <div class="p3-line"></div>
+          <p class="p3-answer">Die meisten wissen es nicht. Nicht weil sie nicht wollen — sondern weil niemand ihnen gezeigt hat wie.</p>
+        </div>
+
+        <!-- P4 -->
+        <div class="design" id="p4">
+          <div class="p4-qm">"</div>
+          <p class="p4-q">Warum hat mir das niemand früher gezeigt?</p>
+          <div class="p4-attr">Was Frauen nach jedem Training sagen</div>
+        </div>
+
+        <!-- P5 -->
+        <div class="design" id="p5">
+          <div class="p5-glow"></div>
+          <div class="p5-svg-wrap">
+            <svg viewBox="0 0 200 260" width="180" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 44 60 Q 26 90 24 140 Q 22 180 30 210 Q 38 235 60 242 Q 80 248 100 248 Q 120 248 140 242 Q 162 235 170 210 Q 178 180 176 140 Q 174 90 156 60 Q 142 38 128 30 Q 116 24 100 24 Q 84 24 72 30 Q 58 38 44 60 Z"
+                fill="rgba(192,86,106,.12)" stroke="rgba(192,86,106,.45)" stroke-width="1.2"/>
+              <ellipse cx="100" cy="22" rx="22" ry="13" fill="rgba(192,86,106,.15)" stroke="rgba(192,86,106,.3)" stroke-width=".8"/>
+              <ellipse cx="72" cy="128" rx="32" ry="34" fill="rgba(192,86,106,.1)" stroke="rgba(192,86,106,.25)" stroke-width=".8"/>
+              <ellipse cx="128" cy="128" rx="32" ry="34" fill="rgba(192,86,106,.1)" stroke="rgba(192,86,106,.25)" stroke-width=".8"/>
+              <circle cx="72" cy="130" r="3.5" fill="rgba(192,86,106,.35)" stroke="rgba(192,86,106,.55)" stroke-width=".8"/>
+              <circle cx="128" cy="130" r="3.5" fill="rgba(192,86,106,.35)" stroke="rgba(192,86,106,.55)" stroke-width=".8"/>
+              <line x1="100" y1="58" x2="100" y2="220" stroke="rgba(192,86,106,.15)" stroke-width=".6" stroke-dasharray="3,3"/>
+              <line x1="26" y1="128" x2="174" y2="128" stroke="rgba(192,86,106,.15)" stroke-width=".6" stroke-dasharray="3,3"/>
+            </svg>
+          </div>
+          <div class="p5-label">Etwas das es noch nicht gibt.</div>
+          <div class="p5-coming">Noch nicht. 🌸</div>
+        </div>
+
+        <!-- P6 -->
+        <div class="design" id="p6">
+          <div class="p6-slide active" id="sl1"><div class="p6-text">Sie hat es<br>selbst gespürt.</div></div>
+          <div class="p6-slide" id="sl2"><div class="p6-text">Weil sie wusste<br>wie sie <em>suchen</em> muss.</div></div>
+          <div class="p6-slide" id="sl3"><div class="p6-text">Das ist<br>kein Glück.</div></div>
+          <div class="p6-slide" id="sl4"><div class="p6-text">Das ist<br><em>Wissen.</em></div></div>
+          <div class="p6-slide" id="sl5"><div class="p6-text" style="font-size:2.5rem">Fembloom.</div></div>
+          <div class="p6-nav">
+            <button class="p6-btn" onclick="prevSlide()">← Zurück</button>
+            <button class="p6-btn" onclick="nextSlide()">Weiter →</button>
+          </div>
+          <div class="p6-dots">
+            <div class="p6-dot active" id="d1"></div>
+            <div class="p6-dot" id="d2"></div>
+            <div class="p6-dot" id="d3"></div>
+            <div class="p6-dot" id="d4"></div>
+            <div class="p6-dot" id="d5"></div>
+          </div>
+        </div>
+
+        <!-- P7 -->
+        <div class="design" id="p7">
+          <div class="p7-icon">🌸</div>
+          <div class="p7-title">Hinter Fembloom steht eine zertifizierte <em>Expertin.</em></div>
+          <div class="p7-text">Sie hat Frauen persönlich begleitet. Ihr Wissen wird bald für jede zugänglich.</div>
+          <div class="p7-badge">Wien · Österreich</div>
+        </div>
+
+        <!-- P8 -->
+        <div class="design" id="p8">
+          <div class="p8-ring">
+            <div class="p8-ring-logo">Fem<em>bloom</em></div>
+          </div>
+          <div class="p8-title">Fembloom<br>startet bald.</div>
+          <div class="p8-sub">Sei dabei bevor<br>alle anderen es sind.</div>
+          <div class="p8-cta">🔗 fembloom.app</div>
+        </div>
+
+        <!-- P9 -->
+        <div class="design" id="p9">
+          <p class="p9-q">Untersuchst du dich regelmäßig?</p>
+          <div class="p9-options">
+            <div class="p9-opt yes">✓ Ja, monatlich</div>
+            <div class="p9-opt">Manchmal</div>
+            <div class="p9-opt">Nein, weiß nicht wie</div>
+          </div>
+          <div class="p9-hint">Antwortet in den Kommentaren 👇</div>
+        </div>
+
+      </div><!-- /post-canvas -->
+
+      <div style="font-size:.7rem;color:rgba(255,255,255,.2);text-align:center;letter-spacing:.08em">
+        480 × 480px · 1:1 Format · Instagram Post
+      </div>
+    </div>
+
+    <!-- RIGHT: Info -->
+    <div class="info-panel">
+      <div class="info-card">
+        <div class="info-label">Aktiver Post</div>
+        <div class="info-title" id="infoTitle">Das 4.000.000 <em>Reel</em></div>
+        <div class="info-text" id="infoText">Euer erster Post. Kein Erklärtext — nur die Zahl und der Satz. Das Video läuft, die Zahl erscheint. Kein Ton nötig.</div>
+      </div>
+
+      <div class="caption-box">
+        <div class="info-label">Instagram Caption</div>
+        <div class="caption-text" id="captionText">4.000.000 Frauen leben in Österreich.
+
+Eine App. Bald. 🌸</div>
+        <div class="hashtags" id="hashtagText">#Fembloom #FembloomApp #Frauengesundheit #ComingSoon #FemTech #Wien</div>
+        <button class="copy-btn" onclick="copyCaption()">Caption kopieren</button>
+      </div>
+
+      <div class="info-card">
+        <div class="info-label">Posting-Zeitpunkt</div>
+        <div class="info-title" id="infoTiming">Woche 1 · <em>Montag</em></div>
+        <div class="info-text" id="infoTipText">Dienstag–Donnerstag, 18–20 Uhr funktioniert am besten. Aber der erste Post kann jeden Tag — Hauptsache er geht raus.</div>
+      </div>
+
+      <div class="export-hint">
+        💡 <b style="color:rgba(255,255,255,.5)">Export:</b> Rechtsklick auf den Post → "Screenshot" oder nutze ein Browser-Screenshot-Tool. Dann direkt auf Instagram hochladen.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Cursor
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function a(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(a);})();
+document.querySelectorAll('button,.post-thumb,.tab').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cr.style.width='44px';cr.style.height='44px';});
+  el.addEventListener('mouseleave',()=>{cr.style.width='28px';cr.style.height='28px';});
+});
+
+// Post data
+const POSTS = {
+  1: {
+    title: 'Das 4.000.000 <em>Reel</em>',
+    text: 'Euer erster Post. Kein Erklärtext — nur die Zahl und der Satz. Das Video läuft, die Zahl erscheint. Kein Ton nötig.',
+    caption: '4.000.000 Frauen leben in Österreich.\n\nEine App. Bald. 🌸',
+    hashtags: '#Fembloom #FembloomApp #Frauengesundheit #ComingSoon #FemTech #Wien',
+    timing: 'Woche 1 · <em>Montag</em>',
+    tip: 'Erster Post = größte organische Reichweite. Bitte alle Freunde am selben Tag zu liken und zu teilen.'
+  },
+  2: {
+    title: 'Die Zahl <em>1:8</em>',
+    text: 'Erschütternd, simpel, nicht vergessbar. Jede die diesen Post sieht denkt an jemanden in ihrem Leben.',
+    caption: 'Jede achte Frau.\n\nDas ist keine Statistik.\nDas sind Mütter. Schwestern. Freundinnen.\n\nFrühentdeckung verändert alles. 🌸',
+    hashtags: '#Fembloom #Brustkrebs #Früherkennung #Frauengesundheit #1von8 #FemTech',
+    timing: 'Woche 1 · <em>Mittwoch</em>',
+    tip: 'Dieser Post wird am häufigsten geteilt. Menschen schicken ihn an ihre Schwestern, Mütter, Freundinnen.'
+  },
+  3: {
+    title: 'Die <em>Frage</em>',
+    text: 'Eine offene Frage die Menschen zum Nachdenken bringt. Keine Antwort anbieten — die Stille ist der Punkt.',
+    caption: 'Wann hast du zuletzt gewusst ob sich in deinem Körper etwas verändert hat?\n\nDie meisten wissen es nicht. Nicht weil sie nicht wollen — sondern weil niemand ihnen gezeigt hat wie.\n\nDas ändern wir. 🌸 fembloom.app',
+    hashtags: '#Fembloom #Frauengesundheit #BrustGesundheit #Körperbewusstsein #FemTech #Wien',
+    timing: 'Woche 1 · <em>Freitag</em>',
+    tip: 'Fragen erzeugen mehr Kommentare als Aussagen. Dieser Post startet Gespräche.'
+  },
+  4: {
+    title: 'Das <em>Zitat</em>',
+    text: 'Ein echter Satz aus echten Trainings. Rose-Hintergrund — auffällig im Feed, warm, menschlich.',
+    caption: '"Warum hat mir das niemand früher gezeigt?"\n\nDas hört unsere Trainerin nach jedem Workshop.\n\nDiese Frage hat Fembloom entstehen lassen. 🌸',
+    hashtags: '#Fembloom #Frauengesundheit #BrustSelbstuntersuchung #Empowerment #WomensHealth #Wien',
+    timing: 'Woche 2 · <em>Dienstag</em>',
+    tip: 'Rose-Hintergrund sticht im dunklen Feed hervor. Dieser Post bekommt die meisten Saves.'
+  },
+  5: {
+    title: 'Die <em>Silhouette</em>',
+    text: 'Erster Produkt-Teaser — ohne zu erklären was es ist. Die Silhouette weckt Neugier ohne alles zu verraten.',
+    caption: 'Etwas das es noch nicht gibt.\n\nNoch nicht. 🌸\n\nfembloom.app · coming soon',
+    hashtags: '#Fembloom #ComingSoon #FemTech #HealthTech #Innovation #Österreich',
+    timing: 'Woche 2 · <em>Donnerstag</em>',
+    tip: 'Geheimnisvoll ist besser als erklärend. Lass die Leute fragen was es ist — antworte in den Kommentaren.'
+  },
+  6: {
+    title: 'Der <em>Moment</em>',
+    text: 'Carousel — 5 Slides. Jeder Slide ein einziger Satz. Das Durchswipen ist selbst eine Erfahrung.',
+    caption: 'Wisst ihr noch?\n\n→ Slide durchswipen ←\n\n🌸 fembloom.app',
+    hashtags: '#Fembloom #Frauengesundheit #BrustGesundheit #Wissen #FemTech #ComingSoon',
+    timing: 'Woche 2 · <em>Samstag</em>',
+    tip: 'Carousels haben 3x mehr Reichweite als normale Posts. Instagram zeigt sie mehrfach.'
+  },
+  7: {
+    title: 'Behind the <em>Scenes</em>',
+    text: 'Erstes menschliches Gesicht hinter Fembloom. Authentisch, nicht gestellt. Zeigt dass da echte Menschen stecken.',
+    caption: 'Hinter Fembloom steckt eine zertifizierte Trainerin die Frauen seit Jahren persönlich begleitet.\n\nIhr Wissen wird bald für jede zugänglich — egal wo, egal wann. 🌸',
+    hashtags: '#Fembloom #BehindTheScenes #Trainerin #Frauengesundheit #Wien #MadeInAustria',
+    timing: 'Woche 3 · <em>Dienstag</em>',
+    tip: 'Echter Mensch = mehr Vertrauen. Das ist der Post der Partnerinnen überzeugt.'
+  },
+  8: {
+    title: 'Die <em>Waitlist</em>',
+    text: 'Klarer Call-to-Action. Erster direkter Hinweis auf fembloom.app. Link in Bio muss aktiv sein.',
+    caption: 'Fembloom startet bald.\n\nSei dabei bevor alle anderen es sind.\n\n🔗 Link in Bio → fembloom.app\n\nEarly Access · Limitiert · 🌸',
+    hashtags: '#Fembloom #EarlyAccess #Waitlist #FemTech #Frauengesundheit #ComingSoon',
+    timing: 'Woche 3 · <em>Donnerstag</em>',
+    tip: 'Dieser Post braucht einen funktionierenden Link in Bio. Waitlist vorher einrichten.'
+  },
+  9: {
+    title: '<em>Engagement</em> Post',
+    text: 'Frage ans Publikum — erzeugt Kommentare und Gespräche. Instagram belohnt Engagement mit mehr Reichweite.',
+    caption: 'Eine ehrliche Frage:\n\nUntersuchst du dich regelmäßig? 👇\n\nAntwortet in den Kommentaren — wir sind gespannt. Und keine Sorge: Die meisten tun es nicht. Genau das wollen wir ändern. 🌸',
+    hashtags: '#Fembloom #Frauengesundheit #BrustSelbstuntersuchung #Community #FemTech #Österreich',
+    timing: 'Woche 3 · <em>Samstag</em>',
+    tip: 'Auf jeden Kommentar antworten — besonders in den ersten 30 Minuten. Das steigert die Reichweite massiv.'
+  }
+};
+
+let currentPost = 1;
+let currentSlide = 1;
+
+function showPost(num) {
+  // Hide all designs
+  document.querySelectorAll('.design').forEach(d => d.classList.remove('active'));
+  document.querySelectorAll('.post-thumb').forEach(t => t.classList.remove('active'));
+  // Show selected
+  document.getElementById('p'+num).classList.add('active');
+  document.querySelectorAll('.post-thumb')[num-1].classList.add('active');
+  currentPost = num;
+  // Update info panel
+  const p = POSTS[num];
+  document.getElementById('infoTitle').innerHTML = p.title;
+  document.getElementById('infoText').textContent = p.text;
+  document.getElementById('captionText').textContent = p.caption;
+  document.getElementById('hashtagText').textContent = p.hashtags;
+  document.getElementById('infoTiming').innerHTML = p.timing;
+  document.getElementById('infoTipText').textContent = p.tip;
+  // Reset carousel
+  if(num === 6) { currentSlide = 1; updateSlides(); }
+}
+
+function copyCaption() {
+  const p = POSTS[currentPost];
+  const text = p.caption + '\n\n' + p.hashtags;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Kopiert!';
+    setTimeout(()=>btn.textContent='Caption kopieren', 2000);
+  });
+}
+
+// Carousel
+function nextSlide() {
+  if(currentSlide < 5) { currentSlide++; updateSlides(); }
+}
+function prevSlide() {
+  if(currentSlide > 1) { currentSlide--; updateSlides(); }
+}
+function updateSlides() {
+  for(let i=1;i<=5;i++){
+    document.getElementById('sl'+i).classList.toggle('active', i===currentSlide);
+    document.getElementById('d'+i).classList.toggle('active', i===currentSlide);
+  }
+}
+
+// Tab switching (simplified)
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
