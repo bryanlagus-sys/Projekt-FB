@@ -1,0 +1,436 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #3a2a2f; background: #faf6f4; border-radius: 12px; overflow: hidden; border: 0.5px solid rgba(0,0,0,0.1); position: relative;">
+
+<style>
+/* ===== FemBloom-inspired animation tokens ===== */
+@keyframes fb-fadeUp {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fb-drip {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(200%); }
+}
+@keyframes fb-dotPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+/* ===== Progress bar at top ===== */
+.bt-prog {
+  position: absolute; top: 0; left: 0; height: 2px;
+  background: linear-gradient(to right, #e8c8d0, #8a4a5e);
+  z-index: 200; width: 0%;
+  transition: width 0.12s ease-out;
+}
+
+/* ===== Navigation ===== */
+.bt-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 24px 40px; border-bottom: 0.5px solid #e8d9d9;
+  position: sticky; top: 0;
+  background: rgba(250, 246, 244, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+  animation: fb-fadeUp 0.9s ease both;
+}
+.bt-logo {
+  font-family: Georgia, serif; font-style: italic; font-size: 22px;
+  color: #8a4a5e; letter-spacing: 0.5px;
+}
+.bt-nav-link {
+  font-size: 14px; color: #6b4550; text-decoration: none;
+  padding: 10px 22px; border: 0.5px solid #c88ea0; border-radius: 999px;
+  transition: all 0.3s ease;
+}
+.bt-nav-link:hover { background: #8a4a5e; color: #fff; border-color: #8a4a5e; }
+
+/* ===== HERO ===== */
+.bt-hero {
+  padding: 90px 40px 70px; text-align: center;
+  background: linear-gradient(180deg, #faf6f4 0%, #f5e9ea 100%);
+  position: relative;
+}
+.bt-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.7rem;
+  color: #8a4a5e; font-size: 0.72rem; letter-spacing: 0.28em;
+  text-transform: uppercase; margin-bottom: 2rem;
+  animation: fb-fadeUp 0.9s ease both;
+}
+.bt-eyebrow::before, .bt-eyebrow::after {
+  content: ''; width: 32px; height: 0.5px; background: #c88ea0;
+  display: inline-block;
+}
+.bt-h1 {
+  font-family: Georgia, serif; font-size: clamp(34px, 6vw, 52px);
+  font-weight: 400; line-height: 1.1;
+  margin: 0 0 22px; color: #3a2a2f;
+  max-width: 760px; margin-left: auto; margin-right: auto;
+  animation: fb-fadeUp 0.9s 0.15s ease both;
+}
+.bt-h1 em { font-style: italic; color: #8a4a5e; }
+.bt-sub {
+  font-size: 17px; line-height: 1.65; color: #6b4550;
+  max-width: 580px; margin: 0 auto 40px;
+  animation: fb-fadeUp 0.9s 0.3s ease both;
+}
+.bt-trust {
+  display: flex; justify-content: center; gap: 48px;
+  flex-wrap: wrap; margin-bottom: 44px;
+  animation: fb-fadeUp 0.9s 0.45s ease both;
+}
+.bt-trust-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.bt-trust-value {
+  font-family: Georgia, serif; font-size: 28px;
+  color: #8a4a5e; line-height: 1;
+}
+.bt-trust-value em { font-style: italic; }
+.bt-trust-label {
+  font-size: 10px; color: #8a6570;
+  letter-spacing: 1.8px; text-transform: uppercase;
+}
+.bt-cta {
+  display: inline-block; background: #8a4a5e; color: #fff;
+  padding: 17px 40px; border-radius: 999px; text-decoration: none;
+  font-size: 13px; font-weight: 500; letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  animation: fb-fadeUp 0.9s 0.6s ease both;
+}
+.bt-cta:hover {
+  background: #6b3748; transform: translateY(-2px);
+  box-shadow: 0 12px 24px -12px rgba(138, 74, 94, 0.4);
+}
+
+/* ===== Dripping line separator ===== */
+.bt-dripline {
+  width: 1px; height: 60px; margin: 0 auto;
+  background: #e8c8d0; position: relative;
+  overflow: hidden;
+}
+.bt-dripline::after {
+  content: ''; display: block;
+  width: 1px; height: 50%;
+  background: #8a4a5e;
+  animation: fb-drip 2.2s ease infinite;
+}
+
+/* ===== SECTIONS ===== */
+.bt-section { padding: 90px 40px; position: relative; }
+.bt-section-alt { background: #fff; }
+.bt-section-dark { background: #2a1f24; color: #faf6f4; }
+
+.bt-h2 {
+  font-family: Georgia, serif; font-size: clamp(28px, 4vw, 38px);
+  font-weight: 400; text-align: center;
+  margin: 0 0 18px; color: #3a2a2f; line-height: 1.2;
+}
+.bt-section-dark .bt-h2 { color: #faf6f4; }
+.bt-h2 em { font-style: italic; color: #8a4a5e; }
+.bt-section-dark .bt-h2 em { color: #e8c8d0; }
+.bt-lead {
+  text-align: center; font-size: 16px; color: #6b4550;
+  max-width: 600px; margin: 0 auto 60px; line-height: 1.75;
+}
+.bt-section-dark .bt-lead { color: #d9c4c9; }
+
+/* ===== Reveal mechanism (the FemBloom hallmark) ===== */
+.bt-reveal {
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.bt-reveal.bt-visible {
+  opacity: 1; transform: none;
+}
+.bt-reveal-delay-1 { transition-delay: 0.1s; }
+.bt-reveal-delay-2 { transition-delay: 0.2s; }
+.bt-reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ===== Bullets (steps) with numbered reveal ===== */
+.bt-bullets {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 24px; max-width: 940px; margin: 0 auto;
+}
+.bt-bullet {
+  background: #faf6f4; padding: 36px 30px; border-radius: 14px;
+  border: 0.5px solid #e8d9d9;
+  border-top: 2px solid transparent;
+  transition: border-top-color 0.4s ease, background 0.4s ease, transform 0.4s ease;
+  position: relative;
+}
+.bt-bullet:hover {
+  border-top-color: #8a4a5e;
+  background: #fff;
+  transform: translateY(-4px);
+}
+.bt-bullet-num {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: #fff; border: 1px solid #c88ea0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Georgia, serif; font-size: 16px;
+  color: #8a4a5e; margin-bottom: 20px;
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+.bt-bullet:hover .bt-bullet-num {
+  background: #8a4a5e; color: #fff; border-color: #8a4a5e;
+  transform: scale(1.05);
+}
+.bt-bullet-title {
+  font-family: Georgia, serif; font-size: 20px; font-weight: 400;
+  margin: 0 0 12px; color: #3a2a2f;
+}
+.bt-bullet-text { font-size: 14px; line-height: 1.7; color: #6b4550; margin: 0; }
+
+/* ===== Team (dark section) ===== */
+.bt-team-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4px; max-width: 900px; margin: 0 auto;
+}
+.bt-person {
+  background: rgba(255,255,255,0.03); padding: 44px 38px;
+  border: 0.5px solid rgba(255,255,255,0.12);
+  border-bottom: 2px solid transparent;
+  transition: border-bottom-color 0.4s ease, background 0.4s ease;
+}
+.bt-person:hover {
+  border-bottom-color: #e8c8d0;
+  background: rgba(255,255,255,0.06);
+}
+.bt-person-num {
+  font-family: Georgia, serif; font-size: 13px; font-style: italic;
+  color: #c88ea0; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.bt-person-num::before {
+  content: ''; width: 24px; height: 0.5px; background: #c88ea0;
+}
+.bt-person-name {
+  font-family: Georgia, serif; font-size: 28px; font-weight: 400;
+  margin: 0 0 6px; color: #faf6f4; letter-spacing: -0.3px;
+}
+.bt-person-name em { font-style: italic; color: #e8c8d0; }
+.bt-person-role {
+  font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase;
+  color: #c88ea0; margin-bottom: 26px;
+}
+.bt-person-quote {
+  font-family: Georgia, serif; font-style: italic; font-size: 16px;
+  line-height: 1.65; color: #d9c4c9; margin: 0 0 30px;
+}
+.bt-person-link {
+  font-size: 11px; color: #e8c8d0; text-decoration: none;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding-bottom: 6px; border-bottom: 0.5px solid #c88ea0;
+  transition: all 0.35s ease;
+}
+.bt-person-link:hover {
+  color: #faf6f4; gap: 16px; border-bottom-color: #faf6f4;
+}
+
+/* ===== Form ===== */
+.bt-form-wrap {
+  max-width: 500px; margin: 0 auto; background: #fff;
+  padding: 44px 40px; border-radius: 18px;
+  border: 0.5px solid #e8d9d9;
+}
+.bt-form-label {
+  display: block; font-size: 11px; color: #8a6570;
+  margin-bottom: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+}
+.bt-form-input {
+  width: 100%; padding: 14px 0;
+  border: none; border-bottom: 0.5px solid #c88ea0;
+  font-size: 16px; background: transparent;
+  color: #3a2a2f; font-family: inherit;
+  box-sizing: border-box; margin-bottom: 26px;
+  transition: border-bottom-color 0.3s ease;
+}
+.bt-form-input:focus {
+  outline: none; border-bottom-color: #8a4a5e;
+}
+.bt-form-input::placeholder { color: #c8b0b6; }
+.bt-form-check {
+  display: flex; gap: 12px; align-items: flex-start;
+  margin: 10px 0 30px; font-size: 13px; color: #6b4550;
+  line-height: 1.55; padding-top: 20px;
+  border-top: 0.5px solid rgba(42, 31, 36, 0.08);
+}
+.bt-form-check input {
+  margin-top: 3px; accent-color: #8a4a5e; flex-shrink: 0;
+}
+.bt-form-button {
+  width: 100%; background: #8a4a5e; color: #fff;
+  padding: 17px; border: none; border-radius: 999px;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  font-family: inherit; letter-spacing: 0.16em; text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+.bt-form-button:hover {
+  background: #6b3748; transform: translateY(-1px);
+  box-shadow: 0 10px 20px -10px rgba(138, 74, 94, 0.4);
+}
+.bt-form-note {
+  font-size: 10px; color: #a08590; text-align: center;
+  margin-top: 18px; letter-spacing: 0.8px;
+}
+
+/* ===== Footer ===== */
+.bt-footer {
+  padding: 48px 40px; text-align: center;
+  background: #f5e9ea; font-size: 12px; color: #8a6570;
+}
+.bt-footer a { color: #8a4a5e; text-decoration: none; margin: 0 10px; }
+
+@media (max-width: 720px) {
+  .bt-bullets, .bt-team-grid { grid-template-columns: 1fr; }
+  .bt-section, .bt-hero { padding: 60px 24px; }
+  .bt-nav { padding: 20px 24px; }
+  .bt-trust { gap: 28px; }
+  .bt-form-wrap { padding: 32px 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .bt-reveal { opacity: 1; transform: none; }
+}
+</style>
+
+<div class="bt-wrap">
+
+  <div class="bt-prog" id="bt-prog"></div>
+
+  <nav class="bt-nav">
+    <div class="bt-logo">brestie.</div>
+    <a href="#anmeldung" class="bt-nav-link">Jetzt anmelden</a>
+  </nav>
+
+  <section class="bt-hero">
+    <div class="bt-eyebrow">Kostenloser Online-Impulsvortrag</div>
+    <h1 class="bt-h1">Deine Brust. <em>Deine Achtsamkeit.</em><br>Dein erster Schritt.</h1>
+    <p class="bt-sub">Ein 45-minütiger Impulsvortrag über MammaCare®, Brustgesundheit und warum Selbstfürsorge dein kraftvollstes Werkzeug ist. Live via Zoom — bequem von zu Hause.</p>
+
+    <div class="bt-trust">
+      <div class="bt-trust-item">
+        <div class="bt-trust-value">1 : <em>8</em></div>
+        <div class="bt-trust-label">Frauen betroffen</div>
+      </div>
+      <div class="bt-trust-item">
+        <div class="bt-trust-value">45 <em>min</em></div>
+        <div class="bt-trust-label">Impulsvortrag</div>
+      </div>
+      <div class="bt-trust-item">
+        <div class="bt-trust-value">0 <em>€</em></div>
+        <div class="bt-trust-label">Investment</div>
+      </div>
+    </div>
+
+    <a href="#anmeldung" class="bt-cta">Kostenlos anmelden</a>
+  </section>
+
+  <div class="bt-dripline"></div>
+
+  <section class="bt-section">
+    <h2 class="bt-h2 bt-reveal">Ein Raum für <em>Wissen.</em> Ein Raum für <em>dich.</em></h2>
+    <p class="bt-lead bt-reveal bt-reveal-delay-1">Offen, herzlich, ohne Druck. In 45 Minuten erfährst du, wie du aktiv Verantwortung für deine Brustgesundheit übernimmst — und warum dein erster Schritt der wichtigste ist.</p>
+    <div class="bt-bullets">
+      <div class="bt-bullet bt-reveal">
+        <div class="bt-bullet-num">01</div>
+        <h3 class="bt-bullet-title">Was ist MammaCare®?</h3>
+        <p class="bt-bullet-text">Die wissenschaftlich fundierte Methode zur Brustselbstuntersuchung — verständlich erklärt.</p>
+      </div>
+      <div class="bt-bullet bt-reveal bt-reveal-delay-1">
+        <div class="bt-bullet-num">02</div>
+        <h3 class="bt-bullet-title">Warum Selbstfürsorge zählt</h3>
+        <p class="bt-bullet-text">Wie regelmäßige Achtsamkeit Veränderungen früh erkennbar macht und dir Sicherheit gibt.</p>
+      </div>
+      <div class="bt-bullet bt-reveal bt-reveal-delay-2">
+        <div class="bt-bullet-num">03</div>
+        <h3 class="bt-bullet-title">Dein nächster Schritt</h3>
+        <p class="bt-bullet-text">Wie ein 1:1 MammaCare® Training abläuft — und ob es das Richtige für dich ist.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bt-section bt-section-dark">
+    <h2 class="bt-h2 bt-reveal">Das <em>Brestie Team</em></h2>
+    <p class="bt-lead bt-reveal bt-reveal-delay-1">Aus Kolleginnen wurden Freundinnen — und aus Freundinnen Macherinnen. Zwei Frauen, eine Mission: Brustgesundheit greifbar machen.</p>
+    <div class="bt-team-grid">
+      <div class="bt-person bt-reveal">
+        <div class="bt-person-num">01</div>
+        <h3 class="bt-person-name">Tatjana <em>Lagus</em></h3>
+        <div class="bt-person-role">MammaCare® Spezialistin</div>
+        <p class="bt-person-quote">„Auch meine Brust trägt eine Narbe — und diese Geschichte hat mich zu dem gemacht, wer ich heute bin."</p>
+        <a href="https://www.tatjana-lagus.at/" class="bt-person-link">Mehr über Tatjana →</a>
+      </div>
+      <div class="bt-person bt-reveal bt-reveal-delay-1">
+        <div class="bt-person-num">02</div>
+        <h3 class="bt-person-name">Katharina <em>König</em></h3>
+        <div class="bt-person-role">MammaCare® Spezialistin</div>
+        <p class="bt-person-quote">„Mit Herz, Fachwissen und dem Mut, über das zu sprechen, was oft ungesagt bleibt."</p>
+        <a href="https://www.katharinakoenig.at/" class="bt-person-link">Mehr über Katharina →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="bt-section bt-section-alt" id="anmeldung">
+    <h2 class="bt-h2 bt-reveal">Jetzt <em>kostenlos</em> anmelden</h2>
+    <p class="bt-lead bt-reveal bt-reveal-delay-1">Trag dich ein und erhalte deinen Zoom-Link direkt per Mail.</p>
+    <div class="bt-form-wrap bt-reveal bt-reveal-delay-2">
+      <label class="bt-form-label">Name</label>
+      <input class="bt-form-input" type="text" placeholder="Vorname Nachname" />
+      <label class="bt-form-label">E-Mail</label>
+      <input class="bt-form-input" type="email" placeholder="name@beispiel.at" />
+      <div class="bt-form-check">
+        <input type="checkbox" id="bt-nl" />
+        <label for="bt-nl">Ja, ich möchte zusätzlich den Brestie-Newsletter mit Tipps zu Brustgesundheit, Workshops und Events erhalten.</label>
+      </div>
+      <button class="bt-form-button">Platz sichern →</button>
+      <p class="bt-form-note">Deine Daten bleiben vertraulich · DSGVO-konform</p>
+    </div>
+  </section>
+
+  <footer class="bt-footer">
+    © 2026 Brestie · Tatjana Lagus &amp; Katharina König<br><br>
+    <a href="#">Impressum</a> · <a href="#">Datenschutz</a> · <a href="#">Kontakt</a>
+  </footer>
+
+</div>
+</div>
+
+<script>
+(function() {
+  // Reveal on scroll (IntersectionObserver — the FemBloom way)
+  var reveals = document.querySelectorAll('.bt-reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('bt-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    reveals.forEach(function(el) { io.observe(el); });
+  } else {
+    reveals.forEach(function(el) { el.classList.add('bt-visible'); });
+  }
+
+  // Progress bar on scroll (scoped to widget iframe)
+  var prog = document.getElementById('bt-prog');
+  function updateProg() {
+    var h = document.documentElement;
+    var scrolled = h.scrollTop || document.body.scrollTop;
+    var height = (h.scrollHeight || document.body.scrollHeight) - h.clientHeight;
+    var pct = height > 0 ? (scrolled / height) * 100 : 0;
+    if (prog) prog.style.width = pct + '%';
+  }
+  window.addEventListener('scroll', updateProg, { passive: true });
+  updateProg();
+})();
+</script>
+</div>
